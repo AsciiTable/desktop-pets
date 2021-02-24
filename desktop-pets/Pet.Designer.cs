@@ -55,8 +55,8 @@ namespace desktop_pets
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(284, 262);
             this.ContextMenuStrip = this.contextMenuStrip1;
-            this.Name = "Form1";
-            this.Text = "Form1";
+            this.Name = "DesktopPets";
+            this.Text = "Desktop Pets";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.mousedown);
             this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.mouseup);

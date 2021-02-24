@@ -17,7 +17,12 @@ namespace desktop_pets
         private int _DisplayWidth = SystemInformation.WorkingArea.Width;
         private Bitmap layer1 = new Bitmap("Art/Cat/idle.png");
         private Bitmap layer2 = new Bitmap("Art/Cat/walk.png");
-
+        #region Icon Fields
+        private NotifyIcon notifyIcon;
+        private ContextMenu contextMenu;
+        private MenuItem menuItemExit;
+        private IContainer componenets;
+        #endregion
         // Art Fields
         // Walking
         private Bitmap walk_sheet = new Bitmap("Art/Cat/walk_anim.png");
@@ -44,6 +49,23 @@ namespace desktop_pets
         }
 
         private void Form1_Load(object sender, EventArgs e) {
+            #region System Tray Components
+            components = new Container();
+            contextMenu = new ContextMenu();
+            menuItemExit = new MenuItem();
+            contextMenu.MenuItems.AddRange(new MenuItem[] { menuItemExit }); // Make new context menu with listed items
+            // Menu Item Exit
+            menuItemExit.Index = 0;
+            menuItemExit.Text = "Exit";
+            menuItemExit.Click += new EventHandler(this.menuItemExit_Click); // If clicked, exit
+            // Icon
+            notifyIcon = new NotifyIcon(this.components);   // Initialize NotifyIcon object
+            notifyIcon.Icon = new Icon("Art/icon.ico");     // Sets the icon that appears in the systray
+            notifyIcon.ContextMenu = contextMenu;           // Context menu will open when right clicked
+            notifyIcon.Text = "Desktop Pets";
+            notifyIcon.Visible = true;
+            #endregion
+
             // Load in Spritesheets
             // Walk sheet
             int col = walk_sheet.Width / XSIZE;
@@ -52,7 +74,7 @@ namespace desktop_pets
                 walk.Add(walk_sheet.Clone(cloneRect, walk_sheet.PixelFormat));
             }
             
-            this.ShowInTaskbar = true;
+            this.ShowInTaskbar = false;
             this.TopMost = true;
             this.FormBorderStyle = FormBorderStyle.None;
             this.Size = new Size(XSIZE, YSIZE);
@@ -135,6 +157,9 @@ namespace desktop_pets
                 index++;
                 count = 0;
             }   
+        }
+        private void menuItemExit_Click(object Sender, EventArgs e) {
+            this.Close();
         }
     }
 }
