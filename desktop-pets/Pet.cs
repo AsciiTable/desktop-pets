@@ -21,15 +21,16 @@ namespace desktop_pets
         private NotifyIcon notifyIcon;
         private ContextMenu contextMenu;
         private MenuItem menuItemExit;
-        private IContainer componenets;
         #endregion
-        // Art Fields
-        // Walking
-        private Bitmap walk_sheet = new Bitmap("Art/Cat/walk_anim.png");
-        private List<Bitmap> walk = new List<Bitmap>();
-        private int walkInd = 0;
-        private bool walkVarient = false;
-
+        #region Art Fields
+        #region Walking
+        private Bitmap walk_v0 = new Bitmap("Art/Cat/walk_anim.png");                       // Default walking spritesheet
+        private Bitmap walk_v1 = new Bitmap("Art/Cat/walk_anim_v1.png");                    // Blinking variation walking spritesheet
+        private Dictionary<int, List<Bitmap>> walk = new Dictionary<int, List<Bitmap>>();   // Dictionary to store Bitmaps and their indexes. 0 is default, > 0 is variation
+        private int walkInd = 0;                                                            // Keeps track of the frame that the pet is currently walking at
+        private bool walkVarient = false;                                                   // Determines which walk variation to play; CHANGE THIS TO INT TO BE ABLE TO WORK WITH %
+        #endregion
+        #endregion
 
         Timer timer = new Timer();
         private int count = 0;
@@ -66,14 +67,11 @@ namespace desktop_pets
             notifyIcon.Visible = true;
             #endregion
 
-            // Load in Spritesheets
-            // Walk sheet
-            int col = walk_sheet.Width / XSIZE;
-            for (int i = 0; i < col; i++) {
-                Rectangle cloneRect = new Rectangle(XSIZE * i, 0, XSIZE, YSIZE);
-                walk.Add(walk_sheet.Clone(cloneRect, walk_sheet.PixelFormat));
-            }
-            
+            #region Load in Spritesheets
+            LoadInSpritesheet(ref walk, ref walk_v0, 0);    // Walk v0
+            LoadInSpritesheet(ref walk, ref walk_v1, 1);    // Walk v1
+            #endregion
+
             this.ShowInTaskbar = false;
             this.TopMost = true;
             this.FormBorderStyle = FormBorderStyle.None;
@@ -128,7 +126,7 @@ namespace desktop_pets
                 // Randomly swap to blinking & walking
             }
             if(!walkVarient)
-                GoThroughFrames(ref walk, ref walkInd, 10);
+                GoThroughFrames(walk[0], ref walkInd, 10);
             // else go through blink walk varient
             
         }
@@ -147,7 +145,7 @@ namespace desktop_pets
             isDragging = false;
         }
         // use ref keyword to pass by reference
-        private void GoThroughFrames(ref List<Bitmap> bm, ref int index, int fps)
+        private void GoThroughFrames(List<Bitmap> bm, ref int index, int fps)
         {
             count++;
             if (count % fps == 0) {
@@ -157,6 +155,22 @@ namespace desktop_pets
                 index++;
                 count = 0;
             }   
+        }
+        private void LoadInSpritesheet(ref Dictionary<int, List<Bitmap>> bm, ref Bitmap sheet, int key)
+        {
+            List<Bitmap> store = new List<Bitmap>();
+            int col = sheet.Width / XSIZE;
+            int row = sheet.Height / YSIZE;
+            for (int r = 0; r < row; r++)
+            {
+                for (int c = 0; c < col; c++)
+                {
+                    // Add checkers to look for content just in case there is a non-full row at the end
+                    Rectangle cloneRect = new Rectangle(XSIZE * c, YSIZE * r, XSIZE, YSIZE);
+                    store.Add(sheet.Clone(cloneRect, sheet.PixelFormat));
+                }
+            }
+            bm.Add(key, store);
         }
         private void menuItemExit_Click(object Sender, EventArgs e) {
             this.Close();
