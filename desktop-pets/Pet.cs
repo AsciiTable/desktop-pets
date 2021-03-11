@@ -28,13 +28,14 @@ namespace desktop_pets
         private Bitmap walk_v1 = new Bitmap("Art/Cat/walk_anim_v1.png");                    // Blinking variation walking spritesheet
         private Dictionary<int, List<Bitmap>> walk = new Dictionary<int, List<Bitmap>>();   // Dictionary to store Bitmaps and their indexes. 0 is default, > 0 is variation
         private int walkInd = 0;                                                            // Keeps track of the frame that the pet is currently walking at
-        private bool walkVarient = false;                                                   // Determines which walk variation to play; CHANGE THIS TO INT TO BE ABLE TO WORK WITH %
+        private int walkVarient = 0;                                                        // Determines which walk variation to play
+        private bool walkComplete = false;
         #endregion
         #endregion
 
         Timer timer = new Timer();
         private int count = 0;
-
+        private Random rand = new Random();
         private int XSIZE = 64;
         private int YSIZE = 64;
         private int SINKLEVEL = 3;
@@ -49,7 +50,7 @@ namespace desktop_pets
             InitializeComponent();
         }
 
-        private void Form1_Load(object sender, EventArgs e) {
+        private void PetForm_Load(object sender, EventArgs e) {
             #region System Tray Components
             components = new Container();
             contextMenu = new ContextMenu();
@@ -120,13 +121,16 @@ namespace desktop_pets
         
         private void moveright() {
             this.Left += 1;
-            if (this.Left > _DisplayWidth) {
-                this.Left = XSIZE *-1;
-                count = 0;
-                // Randomly swap to blinking & walking
+            if (this.Left > _DisplayWidth) {                                // If the pet has gone off the side of the screen...
+                this.Left = XSIZE *-1;                                      // Set it back to the left of the screen
             }
-            if(!walkVarient)
-                GoThroughFrames(walk[0], ref walkInd, 10);
+            // Randomly swap to blinking & walking
+            if (walkComplete)
+            {
+                walkVarient = rand.Next(0, walk.Count);
+                walkComplete = false;
+            }
+            GoThroughFrames(walk[walkVarient], ref walkInd, 10);
             // else go through blink walk varient
             
         }
@@ -145,15 +149,16 @@ namespace desktop_pets
             isDragging = false;
         }
         // use ref keyword to pass by reference
-        private void GoThroughFrames(List<Bitmap> bm, ref int index, int fps)
-        {
+        private void GoThroughFrames(List<Bitmap> bm, ref int index, int fps){
             count++;
-            if (count % fps == 0) {
-                if (index >= bm.Count)
-                    index = 0;
+            if (count % fps == 0) {                     // This needs to eventually be scaled off of time, not frame count to allow for uniformity
                 this.BackgroundImage = bm[index];
                 index++;
-                count = 0;
+                count = 0;                              // Resets the frames count so that we don't eventually overflow the value
+                if (index >= bm.Count){                 // If we finish cycling through the spritesheet...
+                    index = 0;                          // Reset the frame index to 0
+                    walkComplete = true;                // Tell everyone else that the walk cycle has been completed
+                }
             }   
         }
         private void LoadInSpritesheet(ref Dictionary<int, List<Bitmap>> bm, ref Bitmap sheet, int key)

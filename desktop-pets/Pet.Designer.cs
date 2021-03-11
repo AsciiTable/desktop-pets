@@ -57,7 +57,7 @@ namespace desktop_pets
             this.ContextMenuStrip = this.contextMenuStrip1;
             this.Name = "DesktopPets";
             this.Text = "Desktop Pets";
-            this.Load += new System.EventHandler(this.Form1_Load);
+            this.Load += new System.EventHandler(this.PetForm_Load);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.mousedown);
             this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.mouseup);
             this.contextMenuStrip1.ResumeLayout(false);
