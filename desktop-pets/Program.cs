@@ -16,7 +16,7 @@ namespace desktop_pets
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Pet());
+            Application.Run(new PetDisplay());
         }
     }
 }
