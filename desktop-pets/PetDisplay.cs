@@ -15,8 +15,7 @@ namespace desktop_pets
     {
         private int _DisplayHeight = SystemInformation.WorkingArea.Height;
         private int _DisplayWidth = SystemInformation.WorkingArea.Width;
-        private Bitmap layer1 = new Bitmap("Art/Cat/idle.png");
-        private Bitmap layer2 = new Bitmap("Art/Cat/walk.png");
+        private Bitmap defaultLayer = new Bitmap("Art/Cat/idle.png");
         #region Icon Fields
         private NotifyIcon notifyIcon;
         private ContextMenu contextMenu;
@@ -24,9 +23,8 @@ namespace desktop_pets
         #endregion
         #region Art Fields
         #region Idle
-        private Bitmap idle_v0 = new Bitmap("Art/Cat/idle_blink.png");
-        private Dictionary<int, List<Bitmap>> idle = new Dictionary<int, List<Bitmap>>();
-
+        //private Animation idle_v0 = new Animation(new Bitmap("Art/cat/idle_blink"), 64, 64, 10);
+        //private State(Pet.States.Idle,)
         #endregion
         #region Walking
         private Bitmap walk_v0 = new Bitmap("Art/Cat/walk_anim.png");                       // Default walking spritesheet
@@ -47,11 +45,19 @@ namespace desktop_pets
 
         private int HeadPoint = 0;
 
+        private Pet displayedPet;
+
         // Mode bools
         private bool isDragging = false;
 
         public PetDisplay()
         {
+            displayedPet = SaveSystem.LoadRiiTheCat();
+            InitializeComponent();
+        }
+
+        public PetDisplay(Pet p) {
+            displayedPet = p;
             InitializeComponent();
         }
 
@@ -73,20 +79,24 @@ namespace desktop_pets
             notifyIcon.Visible = true;
             #endregion
 
-            #region Load in Spritesheets
+/*            #region Load in Spritesheets
             LoadInSpritesheet(ref walk, ref walk_v0, 0);    // Walk v0
             LoadInSpritesheet(ref walk, ref walk_v1, 1);    // Walk v1
-            #endregion
+            #endregion*/
 
             this.ShowInTaskbar = false;
             this.TopMost = true;
             this.FormBorderStyle = FormBorderStyle.None;
             this.Size = new Size(XSIZE, YSIZE);
-            Color transColor = layer1.GetPixel(0, 0);
-            layer1.MakeTransparent(transColor);
-            this.BackgroundImage = layer1;
+
+            #region Background of Window
+            Color transColor = defaultLayer.GetPixel(0, 0);
+            defaultLayer.MakeTransparent(transColor);
+            this.BackgroundImage = defaultLayer;
             this.BackColor = transColor;
             this.TransparencyKey = transColor;
+            #endregion
+
             HeadPoint =_DisplayHeight - YSIZE + SINKLEVEL;
             this.Location = new Point(0, HeadPoint);
             timer.Interval = 1;
@@ -104,7 +114,8 @@ namespace desktop_pets
                         fc1 = 0;
                         fc2 = 0;
                     }*/
-                    moveright();
+                    //moverightDEP();
+                    stayInPlace();
                 }
                 else
                 {
@@ -124,7 +135,7 @@ namespace desktop_pets
             }
         }
         
-        private void moveright() {
+        private void moverightDEP() {
             this.Left += 1;
             if (this.Left > _DisplayWidth) {                                // If the pet has gone off the side of the screen...
                 this.Left = XSIZE *-1;                                      // Set it back to the left of the screen
@@ -137,8 +148,22 @@ namespace desktop_pets
             }
             GoThroughFrames(walk[walkVarient], ref walkInd, 10);
             // else go through blink walk varient
-            
         }
+
+        private void stayInPlace() {
+            if (displayedPet.currentAnimation == null)
+                displayedPet.currentAnimation = displayedPet.dictionaryOfStates[Pet.States.Idle].GetAnimationToPlay();
+            if (displayedPet.currentAnimation.complete)
+            {
+                displayedPet.currentAnimation.ResetAnimation();
+                displayedPet.currentAnimation = null;
+            }
+            else {
+                GoThroughAnimFrames(displayedPet.currentAnimation);
+            }
+        }
+
+
         private void ExitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.Close();
@@ -166,7 +191,14 @@ namespace desktop_pets
                 }
             }   
         }
-        private void LoadInSpritesheet(ref Dictionary<int, List<Bitmap>> bm, ref Bitmap sheet, int key)
+
+        private void GoThroughAnimFrames(Animation anim) {
+            count++;
+            if (count % anim.durationInFrames == 0) {                    // This needs to eventually be scaled off of time, not frame count to allow for uniformity
+                this.BackgroundImage = anim.GetNextFrame();
+            }
+        }
+/*        private void LoadInSpritesheet(ref Dictionary<int, List<Bitmap>> bm, ref Bitmap sheet, int key)
         {
             List<Bitmap> store = new List<Bitmap>();
             int col = sheet.Width / XSIZE;
@@ -181,7 +213,7 @@ namespace desktop_pets
                 }
             }
             bm.Add(key, store);
-        }
+        }*/
         private void menuItemExit_Click(object Sender, EventArgs e) {
             this.Close();
         }

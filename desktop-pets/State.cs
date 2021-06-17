@@ -5,7 +5,8 @@ using System.Drawing;
 
 namespace desktop_pets
 {
-    class State
+    [System.Serializable]
+    public class State
     {
         private Pet.States state;                                   // Defines which state the pet is currently in
         private Dictionary<int, Animation> dictionaryOfAnimations;  // A dictionary of animations associated with this state                             
@@ -16,6 +17,7 @@ namespace desktop_pets
             state = Pet.States.Null;
             dictionaryOfAnimations = new Dictionary<int, Animation>();
             animVarient = 0;
+            rand = new Random();
         }
 
         public State(Pet.States assignedState, List<Animation> animations) {
@@ -27,6 +29,7 @@ namespace desktop_pets
                 keyForState++;
             }
             animVarient = 0;
+            rand = new Random();
         }
 
         public Animation GetAnimationToPlay() {

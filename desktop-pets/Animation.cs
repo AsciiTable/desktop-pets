@@ -4,19 +4,23 @@ using System.Drawing;
 
 namespace desktop_pets
 {
-    /** TO DOs
+    /** TO DOs (+ = essential, ~ = for custom dlc)
      *  + Play(): play the animation directly through this object, if objective & possible.
      *      Issues: To show each frame, the BackgrounImage (Bitmap) of a Form object must be changed
-     *  + Transparancy automation: currently believed to be impossible and must use a certain 
+     *      Temporarily solved with an untested external call to iterate through frames
+     *  + Change the durationInFrames (based on number of frames) to FPS (based on time)
+     *  +~ Transparancy automation: currently believed to be impossible and must use a certain 
      *      color as a key for the system to know which color specifically to make transparent
      *      when rendering it to the screen.
-     *  + External setters of adjustable variables; primarly for buttons/fields on the customizable form
+     *  +~ External setters of adjustable variables; primarly for buttons/fields on the customizable form on update
+     *  ~ Row & Column variable constructor as another option opposed to the X & Y pixel count
      */
-    class Animation
+    [System.Serializable]
+    public class Animation
     {
         #region Adjustable Variables
         private Bitmap fullSpritesheet;                 // Spritesheet of the animation
-        public int fps { get; private set; }            // Number of frames played per second
+        public int durationInFrames { get; private set; } // Number of frames this animation lasts
         public int xsize { get; private set; }          // Number of pixels length-wise for each individual frame
         public int ysize { get; private set; }          // Number of pixels height-wise for each individual frame
         public int numOfFrames { get; private set; }    // Total number of frames in an animation
@@ -31,7 +35,7 @@ namespace desktop_pets
         #region Constructors
         public Animation() {
             fullSpritesheet = null;
-            fps = 0;
+            durationInFrames = 0;
             xsize = 0;
             ysize = 0;
             numOfFrames = 0;
@@ -40,9 +44,10 @@ namespace desktop_pets
             frames = new List<Bitmap>();
         }
 
-        public Animation(Bitmap spriteSheet, int framesPerSecond = 10, int numXPixels = 0, int numYPixels = 0){
+        public Animation(Bitmap spriteSheet, int numXPixels = 0, int numYPixels = 0, int numberOfFramesPlayed = 10)
+        {
             fullSpritesheet = spriteSheet;
-            fps = framesPerSecond;
+            durationInFrames = numberOfFramesPlayed;
             xsize = numXPixels;
             ysize = numYPixels;
             numOfFrames = CalcuateNumberOfFrames();
@@ -53,12 +58,13 @@ namespace desktop_pets
                 frames = LoadInSpritesheet();
         }
 
-        public Animation(Bitmap spriteSheet, int totalNumOfFrames, int framesPerSecond = 10, int numXPixels = 0, int numYPixels = 0)
+        public Animation(Bitmap spriteSheet, int totalNumOfFrames, int numXPixels = 0, int numYPixels = 0, int framesPerSecond = 10)
         {
             fullSpritesheet = spriteSheet;
-            fps = framesPerSecond;
+            durationInFrames = framesPerSecond;
             xsize = numXPixels;
             ysize = numYPixels;
+            if(totalNumOfFrames > CalcuateNumberOfFrames())
             numOfFrames = totalNumOfFrames;
             frameIndex = 0;
             complete = true;
