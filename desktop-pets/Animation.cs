@@ -20,7 +20,8 @@ namespace desktop_pets
     {
         #region Adjustable Variables
         private Bitmap fullSpritesheet;                 // Spritesheet of the animation
-        public int durationInFrames { get; private set; } // Number of frames this animation lasts
+        public int fps { get; private set; }
+        public float fpsSecondInterval { get; private set; }
         public int xsize { get; private set; }          // Number of pixels length-wise for each individual frame
         public int ysize { get; private set; }          // Number of pixels height-wise for each individual frame
         public int numOfFrames { get; private set; }    // Total number of frames in an animation
@@ -35,19 +36,22 @@ namespace desktop_pets
         #region Constructors
         public Animation() {
             fullSpritesheet = null;
-            durationInFrames = 0;
+            fps = 0;
             xsize = 0;
             ysize = 0;
             numOfFrames = 0;
             frameIndex = 0;
             complete = true;
             frames = new List<Bitmap>();
+            fpsSecondInterval = 0f;
         }
 
-        public Animation(Bitmap spriteSheet, int numXPixels = 0, int numYPixels = 0, int numberOfFramesPlayed = 10)
+        public Animation(Bitmap spriteSheet, int numXPixels = 0, int numYPixels = 0, int FPS = 10)
         {
             fullSpritesheet = spriteSheet;
-            durationInFrames = numberOfFramesPlayed;
+            fps = FPS;
+            fpsSecondInterval = (float)1 / (float)fps;
+            Console.WriteLine("Time: " + fpsSecondInterval);
             xsize = numXPixels;
             ysize = numYPixels;
             numOfFrames = CalcuateNumberOfFrames();
@@ -58,10 +62,11 @@ namespace desktop_pets
                 frames = LoadInSpritesheet();
         }
 
-        public Animation(Bitmap spriteSheet, int totalNumOfFrames, int numXPixels = 0, int numYPixels = 0, int framesPerSecond = 10)
+        public Animation(Bitmap spriteSheet, int totalNumOfFrames, int numXPixels = 0, int numYPixels = 0, int FPS = 10)
         {
             fullSpritesheet = spriteSheet;
-            durationInFrames = framesPerSecond;
+            fps = FPS;
+            fpsSecondInterval = (float)1 / (float)fps;
             xsize = numXPixels;
             ysize = numYPixels;
             if(totalNumOfFrames > CalcuateNumberOfFrames())
@@ -119,7 +124,7 @@ namespace desktop_pets
         #endregion
 
         #region External Setters (Customization usage only)
-        // fps setter
+        // fps setter (DON'T FORGET TO ALSO UPDATE THE FPSSECONDINTERVAL WITH THIS SETTER)
         // xsize setter
         // ysize setter
         // numOfFrames setter

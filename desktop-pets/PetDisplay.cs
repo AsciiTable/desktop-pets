@@ -36,7 +36,8 @@ namespace desktop_pets
         #endregion
         #endregion
 
-        Timer timer = new Timer();
+        private Timer timer = new Timer();
+        private DateTime fpsTimer = new DateTime();
         private int count = 0;
         private Random rand = new Random();
         private int XSIZE = 64;
@@ -151,16 +152,16 @@ namespace desktop_pets
         }
 
         private void stayInPlace() {
-            if (displayedPet.currentAnimation == null)
+            if (displayedPet.currentAnimation == null) {
                 displayedPet.currentAnimation = displayedPet.dictionaryOfStates[Pet.States.Idle].GetAnimationToPlay();
-            if (displayedPet.currentAnimation.complete)
-            {
+                fpsTimer = DateTime.Now;
+            }
+            if (displayedPet.currentAnimation.complete) {
                 displayedPet.currentAnimation.ResetAnimation();
                 displayedPet.currentAnimation = null;
             }
-            else {
+            else
                 GoThroughAnimFrames(displayedPet.currentAnimation);
-            }
         }
 
 
@@ -192,10 +193,11 @@ namespace desktop_pets
             }   
         }
 
-        private void GoThroughAnimFrames(Animation anim) {
-            count++;
-            if (count % anim.durationInFrames == 0) {                    // This needs to eventually be scaled off of time, not frame count to allow for uniformity
-                this.BackgroundImage = anim.GetNextFrame();
+        private void GoThroughAnimFrames(Animation anim) {                        // FPS-based animation
+            if ((DateTime.Now - fpsTimer).TotalSeconds >= anim.fpsSecondInterval) // When the animation's time interval between each frame is reached...
+            {
+                this.BackgroundImage = anim.GetNextFrame();                       // Change the frame
+                fpsTimer = DateTime.Now;                                          // Reset the timer for the next animation
             }
         }
 /*        private void LoadInSpritesheet(ref Dictionary<int, List<Bitmap>> bm, ref Bitmap sheet, int key)
