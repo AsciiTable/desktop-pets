@@ -12,15 +12,17 @@ namespace desktop_pets
         private Dictionary<int, Animation> dictionaryOfAnimations;  // A dictionary of animations associated with this state                             
         private int animVarient;                                    // Keeps track of which animation it's playing out of the list of animations avalible
         private Random rand;
+        public Pet.States dependantState { get; private set; }        // A state that must be played in sequence after this state
 
         public State() {                                            // Empty, default constructor
             state = Pet.States.Null;
             dictionaryOfAnimations = new Dictionary<int, Animation>();
             animVarient = 0;
             rand = new Random();
+            dependantState = Pet.States.Null;
         }
 
-        public State(Pet.States assignedState, List<Animation> animations) {
+        public State(Pet.States assignedState, List<Animation> animations, Pet.States stateToPlayAterThis = Pet.States.Null) {
             state = assignedState;
             dictionaryOfAnimations = new Dictionary<int, Animation>();
             int keyForState = 0;
@@ -30,6 +32,7 @@ namespace desktop_pets
             }
             animVarient = 0;
             rand = new Random();
+            dependantState = stateToPlayAterThis;
         }
 
         public Animation GetAnimationToPlay() {

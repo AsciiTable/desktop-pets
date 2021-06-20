@@ -18,16 +18,23 @@ namespace desktop_pets
 
         public State activeState { get; private set; }
         public Animation currentAnimation { get; set; }
+        private List<States> dependantStates;
 
         public Pet() {
             name = "";
             dictionaryOfStates = new Dictionary<States, State>();
             activeState = null;
+            dependantStates = new List<States>();
         }
 
         public Pet(string petName, Dictionary<States, State> dictOfStates) {
             name = petName;
             dictionaryOfStates = dictOfStates;
+            dependantStates = new List<States>();
+            foreach (State s in dictOfStates.Values) {
+                if (s.dependantState != States.Null && !dependantStates.Contains(s.dependantState))
+                    dependantStates.Add(s.dependantState);
+            }
             if (dictOfStates.ContainsKey(States.Idle))
                 activeState = dictOfStates[States.Idle];
             else
@@ -35,5 +42,10 @@ namespace desktop_pets
         }
 
         // BEHAVIOUR TREE
+        public void AutoPickNextState() { 
+            
+        }
+
+
     }
 }
