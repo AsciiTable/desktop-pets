@@ -21,7 +21,7 @@ namespace desktop_pets
         private ContextMenu contextMenu;
         private MenuItem menuItemExit;
         #endregion
-        #region Art Fields
+        #region Art Fields (Should be Deprecated)
         #region Idle
         //private Animation idle_v0 = new Animation(new Bitmap("Art/cat/idle_blink"), 64, 64, 10);
         //private State(Pet.States.Idle,)
@@ -47,6 +47,7 @@ namespace desktop_pets
         private int HeadPoint = 0;
 
         private Pet displayedPet;
+        private bool isMoving;
 
         // Mode bools
         private bool isDragging = false;
@@ -80,10 +81,10 @@ namespace desktop_pets
             notifyIcon.Visible = true;
             #endregion
 
-/*            #region Load in Spritesheets
-            LoadInSpritesheet(ref walk, ref walk_v0, 0);    // Walk v0
-            LoadInSpritesheet(ref walk, ref walk_v1, 1);    // Walk v1
-            #endregion*/
+            /*            #region Load in Spritesheets
+                        LoadInSpritesheet(ref walk, ref walk_v0, 0);    // Walk v0
+                        LoadInSpritesheet(ref walk, ref walk_v1, 1);    // Walk v1
+                        #endregion*/
 
             this.ShowInTaskbar = false;
             this.TopMost = true;
@@ -98,23 +99,29 @@ namespace desktop_pets
             this.TransparencyKey = transColor;
             #endregion
 
-            HeadPoint =_DisplayHeight - YSIZE + SINKLEVEL;
+            HeadPoint = _DisplayHeight - YSIZE + SINKLEVEL;
             this.Location = new Point(0, HeadPoint);
             timer.Interval = 1;
             timer.Tick += new EventHandler(Timer_Tick);
             timer.Start();
         }
+
         private void Timer_Tick(object sender, EventArgs e) {
+            SwitchStates(displayedPet.activeState.state);
+        }
+
+        #region Drag reference
+        /*private void Timer_Tick(object sender, EventArgs e) {
             if (this.Location.Y >= HeadPoint)
             {
                 if (!isDragging)
                 {
-                    /*if (is_fly)
+                    *//*if (is_fly)
                     {
                         is_fly = false;
                         fc1 = 0;
                         fc2 = 0;
-                    }*/
+                    }*//*
                     //moverightDEP();
                     SwitchStates(displayedPet.activeState.state);
                     //SwitchStates(Pet.States.Walk);
@@ -135,8 +142,10 @@ namespace desktop_pets
                     //dragmode();
                 }
             }
-        }
-        
+        }*/
+        #endregion
+
+        #region Move reference
         private void moverightDEP() {
             this.Left += 1;
             if (this.Left > _DisplayWidth) {                                // If the pet has gone off the side of the screen...
@@ -151,6 +160,7 @@ namespace desktop_pets
             GoThroughFrames(walk[walkVarient], ref walkInd, 10);
             // else go through blink walk varient
         }
+        #endregion
 
         private void SwitchStates(Pet.States selectedState = Pet.States.Idle) {
             if (!displayedPet.activeState.stateComplete)
@@ -165,8 +175,10 @@ namespace desktop_pets
                     displayedPet.currentAnimation.ResetAnimation();
                     displayedPet.currentAnimation = null;
                 }
-                else
+                else {
                     GoThroughAnimFrames(displayedPet.currentAnimation);
+                    
+                }  
             }
             else {
                 displayedPet.activeState.ResetState();
@@ -189,6 +201,8 @@ namespace desktop_pets
         {
             isDragging = false;
         }
+
+        #region Non-FPS based frame iterater
         // use ref keyword to pass by reference
         private void GoThroughFrames(List<Bitmap> bm, ref int index, int fps){
             count++;
@@ -202,14 +216,30 @@ namespace desktop_pets
                 }
             }   
         }
+        #endregion
+        // Look into switching FPS rates 
 
         private void GoThroughAnimFrames(Animation anim) {                        // FPS-based animation
             if ((DateTime.Now - fpsTimer).TotalSeconds >= anim.fpsSecondInterval) // When the animation's time interval between each frame is reached...
             {
+                if (displayedPet.activeState.state.Equals(Pet.States.Walk) && !isMoving)
+                    isMoving = true;
+                else if (!displayedPet.activeState.state.Equals(Pet.States.Walk) && isMoving)
+                    isMoving = false;
+
                 this.BackgroundImage = anim.GetNextFrame();                       // Change the frame
                 fpsTimer = DateTime.Now;                                          // Reset the timer for the next animation
-                if (anim.complete) 
+                if (anim.complete) {
                     displayedPet.activeState.IncrementLoop();
+                }
+                    
+            }
+            if (isMoving)
+            {
+                this.Left += 1;
+                if (this.Left > _DisplayWidth) {                                // If the pet has gone off the side of the screen...
+                    this.Left = XSIZE * -1;                                      // Set it back to the left of the screen
+                }
             }
         }
 /*        private void LoadInSpritesheet(ref Dictionary<int, List<Bitmap>> bm, ref Bitmap sheet, int key)

@@ -66,8 +66,10 @@ namespace desktop_pets
 
         public void IncrementLoop() {
             numOfLoopsPlayed++;
-            if (numOfLoopsPlayed >= minNumLoops)
-                stateComplete = true;
+            if (numOfLoopsPlayed >= minNumLoops) {
+                if(rand.Next(0,2) >= 1)
+                    stateComplete = true;
+            } 
         }
     }
 }
