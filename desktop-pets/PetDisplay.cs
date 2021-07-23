@@ -145,7 +145,7 @@ namespace desktop_pets
         }*/
         #endregion
 
-        #region Move reference
+        #region Move reference (Deprecated)
         private void moverightDEP() {
             this.Left += 1;
             if (this.Left > _DisplayWidth) {                                // If the pet has gone off the side of the screen...
@@ -169,6 +169,7 @@ namespace desktop_pets
                 {
                     displayedPet.currentAnimation = displayedPet.dictionaryOfStates[selectedState].GetAnimationToPlay();
                     fpsTimer = DateTime.Now;
+                    GoThroughAnimFrames(displayedPet.currentAnimation);
                 }
                 if (displayedPet.currentAnimation.complete)
                 {
@@ -177,7 +178,6 @@ namespace desktop_pets
                 }
                 else {
                     GoThroughAnimFrames(displayedPet.currentAnimation);
-                    
                 }  
             }
             else {
