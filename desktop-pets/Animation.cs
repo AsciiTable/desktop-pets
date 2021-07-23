@@ -61,22 +61,6 @@ namespace desktop_pets
             if (numOfFrames > 0) 
                 frames = LoadInSpritesheet();
         }
-
-        public Animation(Bitmap spriteSheet, int totalNumOfFrames, int numXPixels = 0, int numYPixels = 0, int FPS = 10)
-        {
-            fullSpritesheet = spriteSheet;
-            fps = FPS;
-            fpsSecondInterval = (float)1 / (float)fps;
-            xsize = numXPixels;
-            ysize = numYPixels;
-            if(totalNumOfFrames > CalcuateNumberOfFrames())
-            numOfFrames = totalNumOfFrames;
-            frameIndex = 0;
-            complete = true;
-            frames = new List<Bitmap>();
-            if (numOfFrames > 0)
-                frames = LoadInSpritesheet();
-        }
         #endregion
 
         #region Internal Functionalities

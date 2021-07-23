@@ -116,7 +116,8 @@ namespace desktop_pets
                         fc2 = 0;
                     }*/
                     //moverightDEP();
-                    stayInPlace();
+                    SwitchStates(displayedPet.activeState.state);
+                    //SwitchStates(Pet.States.Walk);
                 }
                 else
                 {
@@ -151,17 +152,26 @@ namespace desktop_pets
             // else go through blink walk varient
         }
 
-        private void stayInPlace() {
-            if (displayedPet.currentAnimation == null) {
-                displayedPet.currentAnimation = displayedPet.dictionaryOfStates[Pet.States.Idle].GetAnimationToPlay();
-                fpsTimer = DateTime.Now;
+        private void SwitchStates(Pet.States selectedState = Pet.States.Idle) {
+            if (!displayedPet.activeState.stateComplete)
+            {
+                if (displayedPet.currentAnimation == null)
+                {
+                    displayedPet.currentAnimation = displayedPet.dictionaryOfStates[selectedState].GetAnimationToPlay();
+                    fpsTimer = DateTime.Now;
+                }
+                if (displayedPet.currentAnimation.complete)
+                {
+                    displayedPet.currentAnimation.ResetAnimation();
+                    displayedPet.currentAnimation = null;
+                }
+                else
+                    GoThroughAnimFrames(displayedPet.currentAnimation);
             }
-            if (displayedPet.currentAnimation.complete) {
-                displayedPet.currentAnimation.ResetAnimation();
-                displayedPet.currentAnimation = null;
+            else {
+                displayedPet.activeState.ResetState();
+                displayedPet.AutoPickNextState();
             }
-            else
-                GoThroughAnimFrames(displayedPet.currentAnimation);
         }
 
 
@@ -198,6 +208,8 @@ namespace desktop_pets
             {
                 this.BackgroundImage = anim.GetNextFrame();                       // Change the frame
                 fpsTimer = DateTime.Now;                                          // Reset the timer for the next animation
+                if (anim.complete) 
+                    displayedPet.activeState.IncrementLoop();
             }
         }
 /*        private void LoadInSpritesheet(ref Dictionary<int, List<Bitmap>> bm, ref Bitmap sheet, int key)
