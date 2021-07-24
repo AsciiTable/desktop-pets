@@ -35,33 +35,35 @@ namespace desktop_pets
             this.contextMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
-            // contextMenuStrip1
+            // contextMenuStrip
             // 
             this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.exitToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip";
-            this.contextMenuStrip.Size = new System.Drawing.Size(99, 26);
+            this.contextMenuStrip.Size = new System.Drawing.Size(94, 26);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(93, 22);
             this.exitToolStripMenuItem.Text = "exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.ExitToolStripMenuItem_Click);
             // 
-            // Desktop Pets main form
+            // PetDisplay
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 262);
+            this.ClientSize = new System.Drawing.Size(284, 284);
             this.ContextMenuStrip = this.contextMenuStrip;
-            this.Name = "DesktopPets";
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Name = "PetDisplay";
             this.Text = "Desktop Pets";
             this.Load += new System.EventHandler(this.PetDisplayForm_Load);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.mousedown);
             this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.mouseup);
             this.contextMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
+
         }
 
         #endregion

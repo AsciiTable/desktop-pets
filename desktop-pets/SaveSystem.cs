@@ -25,7 +25,7 @@ namespace desktop_pets
             Animation idle_v1 = new Animation(new Bitmap("Art/cat/idle_blink.png"), 64, 64, 6);
             idleAnimations.Add(idle_v0);
             idleAnimations.Add(idle_v1);
-            State idle = new State(Pet.States.Idle, idleAnimations, Pet.States.Null, 30);
+            State idle = new State(Pet.States.Idle, idleAnimations, true, Pet.States.Null, 30);
             stateLoadingDict.Add(Pet.States.Idle, idle);
             #endregion
             #region Walk State
@@ -34,10 +34,16 @@ namespace desktop_pets
             Animation walk_v1 = new Animation(new Bitmap("Art/Cat/walk_anim_v1.png"), 64, 64, 6);
             walkAnimations.Add(walk_v0);
             walkAnimations.Add(walk_v1);
-            State walk = new State(Pet.States.Walk, walkAnimations, Pet.States.Null, 3);
+            State walk = new State(Pet.States.Walk, walkAnimations, true, Pet.States.Null, 3);
             stateLoadingDict.Add(Pet.States.Walk, walk);
             #endregion
-
+            #region Drag State
+            List<Animation> dragAnimations = new List<Animation>();
+            Animation drag_v0 = new Animation(new Bitmap("Art/Cat/drag_v0.png"), 64, 64, 1);
+            dragAnimations.Add(drag_v0);
+            State drag = new State(Pet.States.Drag, dragAnimations, false, Pet.States.Null, 0);
+            stateLoadingDict.Add(Pet.States.Drag, drag);
+            #endregion
             return new Pet("Rii", stateLoadingDict);
         }
 

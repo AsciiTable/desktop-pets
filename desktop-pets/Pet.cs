@@ -9,7 +9,7 @@ namespace desktop_pets
     {
         public enum States                                     // All avaliable states that a pet could be in
         {
-            Idle, Walk, Drag, Land, Needy, Satisfied, Null
+            Idle, Walk, Drag, Fall, Land, Needy, Satisfied, Null
         }
         #region Attributes
         public string name { get; private set; }               // Name of the pet
@@ -19,8 +19,7 @@ namespace desktop_pets
 
         public State activeState { get; private set; }
         public Animation currentAnimation { get; set; }
-        private List<States> dependantStates;
-        private bool independantStateExists;
+        //private List<States> dependantStates;
         private Random rand;
 
         public Pet() {
@@ -28,8 +27,7 @@ namespace desktop_pets
             dictionaryOfStates = new Dictionary<States, State>();
             listOfSelectableStates = new List<States>(dictionaryOfStates.Keys);
             activeState = null;
-            dependantStates = new List<States>();
-            independantStateExists = false;
+            //dependantStates = new List<States>();
             rand = new Random();
         } 
 
@@ -37,17 +35,22 @@ namespace desktop_pets
             name = petName;
             dictionaryOfStates = dictOfStates;
             listOfSelectableStates = new List<States>(dictionaryOfStates.Keys);
-            dependantStates = new List<States>();
+            //dependantStates = new List<States>();
             foreach (State s in dictOfStates.Values) {
-                if (s.dependantState != States.Null && !dependantStates.Contains(s.dependantState)) {
+                /*if (s.dependantState != States.Null && !dependantStates.Contains(s.dependantState))
+                {
                     dependantStates.Add(s.dependantState);
-                    foreach (States sl in listOfSelectableStates) {
-                        if (sl.Equals(s.dependantState)) {
+                    foreach (States sl in listOfSelectableStates)
+                    {
+                        if (sl.Equals(s.dependantState))
+                        {
                             listOfSelectableStates.Remove(sl);
                             break;
                         }
                     }
-                }
+                }*/
+                if (!s.canRandomlyTrigger)
+                    listOfSelectableStates.Remove(s.state);
             }
             if (dictOfStates.ContainsKey(States.Idle))
                 activeState = dictOfStates[States.Idle];
@@ -58,14 +61,14 @@ namespace desktop_pets
 
 
         public States AutoPickNextState() {
-            if (dictionaryOfStates.Count > 0 && (dictionaryOfStates.Count > dependantStates.Count))
+            if (dictionaryOfStates.Count > 0)
             {
                 if (activeState.dependantState == States.Null)
                 {
                     // Pick a new independent state
-                    int chosenStateNum = rand.Next(0, dictionaryOfStates.Count);
+                    int chosenStateNum = rand.Next(0, listOfSelectableStates.Count);
                     Console.WriteLine("Random number chosen: " + chosenStateNum);
-                    activeState = dictionaryOfStates[listOfSelectableStates[chosenStateNum]];
+                    activeState = dictionaryOfStates[listOfSelectableStates[chosenStateNum]];   // Trying to switch to drag caused an issue here (out of index error)
                     return activeState.state;
                 }
                 else
@@ -82,6 +85,16 @@ namespace desktop_pets
                 }
             }
             return States.Null;
+        }
+
+        public void ImmediatelyChangeToThisState(Pet.States s) {
+            foreach (State sl in dictionaryOfStates.Values) {
+                if (s == sl.state) {
+                    activeState.ResetState();
+                    activeState = sl;
+                    break;
+                }
+            }
         }
     }
 }

@@ -16,6 +16,7 @@ namespace desktop_pets
         public bool stateComplete { get; private set; }
         private Random rand;
         public Pet.States dependantState { get; private set; }       // A state that must be played in sequence after this state
+        public bool canRandomlyTrigger { get; private set; }
 
         public State() {                                            // Empty, default constructor
             state = Pet.States.Null;
@@ -25,9 +26,10 @@ namespace desktop_pets
             dependantState = Pet.States.Null;
             minNumLoops = 0;
             stateComplete = false;
+            canRandomlyTrigger = false;
         }
 
-        public State(Pet.States assignedState, List<Animation> animations, Pet.States stateToPlayAterThis = Pet.States.Null, int minimumNumberOfLoops = 0) {
+        public State(Pet.States assignedState, List<Animation> animations, bool ableToRandomlyTrigger, Pet.States stateToPlayAterThis = Pet.States.Null, int minimumNumberOfLoops = 0) {
             state = assignedState;
             dictionaryOfAnimations = new Dictionary<int, Animation>();
             int keyForState = 0;
@@ -40,6 +42,7 @@ namespace desktop_pets
             dependantState = stateToPlayAterThis;
             stateComplete = false;
             minNumLoops = minimumNumberOfLoops;
+            canRandomlyTrigger = ableToRandomlyTrigger;
         }
 
         public Animation GetAnimationToPlay() {
