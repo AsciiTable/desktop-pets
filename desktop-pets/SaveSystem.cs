@@ -41,7 +41,7 @@ namespace desktop_pets
             List<Animation> dragAnimations = new List<Animation>();
             Animation drag_v0 = new Animation(new Bitmap("Art/Cat/drag_v0.png"), 64, 64, 1);
             dragAnimations.Add(drag_v0);
-            State drag = new State(Pet.States.Drag, dragAnimations, false, Pet.States.Null, 0);
+            State drag = new State(Pet.States.Drag, dragAnimations, false, Pet.States.Idle, 1);
             stateLoadingDict.Add(Pet.States.Drag, drag);
             #endregion
             return new Pet("Rii", stateLoadingDict);

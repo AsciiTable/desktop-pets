@@ -98,7 +98,14 @@ namespace desktop_pets
                     complete = true;            // Flag it as true and reset it externally using ResetAnimation when ready
                 return frames[frameIndex - 1];
             }
+            else if (frameIndex >= frames.Count) {
+                return frames[0];
+            }
             return null;
+        }
+
+        public Bitmap GetFrameAtIndex(int ind) {
+            return frames[ind];
         }
 
         public void ResetAnimation() {      // An external call to reset the animation to the beginning

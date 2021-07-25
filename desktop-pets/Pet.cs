@@ -90,7 +90,8 @@ namespace desktop_pets
         public void ImmediatelyChangeToThisState(Pet.States s) {
             foreach (State sl in dictionaryOfStates.Values) {
                 if (s == sl.state) {
-                    activeState.ResetState();
+                    if(activeState != null)
+                        activeState.ResetState();
                     activeState = sl;
                     break;
                 }
