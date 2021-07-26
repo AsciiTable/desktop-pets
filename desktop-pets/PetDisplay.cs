@@ -38,11 +38,13 @@ namespace desktop_pets
 
         private Timer timer = new Timer();
         private DateTime fpsTimer = new DateTime();
+        private DateTime freefallTimer = new DateTime();
         private int count = 0;
         private Random rand = new Random();
         private int XSIZE = 64;
         private int YSIZE = 64;
         private int SINKLEVEL = 3;
+        private const float GRAVIATIONALCONSTANT = 9.8f;
 
         private int HeadPoint = 0;
         private Pet displayedPet;
@@ -51,6 +53,7 @@ namespace desktop_pets
         // Mode bools
         private bool isMoving = false;
         private bool isDragging = false;
+        private bool isFreeFalling = false;
 
         public PetDisplay()
         {
@@ -112,31 +115,33 @@ namespace desktop_pets
 
 
         private void Timer_Tick(object sender, EventArgs e) {
-            if (this.Location.Y >= HeadPoint) {                                 // If the window is detected to have moved up from/is equal to the original Y position
-                if (!isDragging) {                                              // If the user is not actively dragging the window
-                    if (displayedPet.activeState.state == Pet.States.Drag){     // If the current state is LISTED as Drag
-                        PlayState(Pet.States.Idle);                             // Play the state that comes after being dragged
+            if (isDragging) {                                                       // If pet is being dragged
+                PlayState(Pet.States.Drag);
+                //displayedPet.ImmediatelyChangeToThisState(Pet.States.Drag);
+                //this.BackgroundImage = displayedPet.activeState.GetAnimationToPlay().GetFrameAtIndex(0);
+                Drag();
+            }
+            else if (this.Location.Y >= HeadPoint) {                                // If the window is detected to have moved up from/is equal to the original Y position
+                if (!isDragging) {                                                  // If the user is not actively dragging the window
+                    if (displayedPet.activeState.state == Pet.States.Drag){         // If the current state is LISTED as Drag
+                        DesktopLocation = new Point(DesktopLocation.X, HeadPoint);  // Ensures that the pet cannot be dropped lower than the defined headpoint
+                        PlayState(Pet.States.Idle);                                 // Play the state that comes after being dragged
                     }
                     else {
                         PlayState(displayedPet.activeState.state);              // Continue normal/auto behavior
                     }
                     
                 }
-                else {                                                          // Else if the user IS actively dragging the window
-                    PlayState(Pet.States.Drag);
-                    //displayedPet.ImmediatelyChangeToThisState(Pet.States.Drag);
-                    //this.BackgroundImage = displayedPet.activeState.GetAnimationToPlay().GetFrameAtIndex(0);
-                    //Drag();
-                }
-
+                if (isFreeFalling)
+                    isFreeFalling = false;
             }
-            else {
-                if (isDragging) {
-                    PlayState(Pet.States.Drag);
-                    //displayedPet.ImmediatelyChangeToThisState(Pet.States.Drag);
-                    //this.BackgroundImage = displayedPet.activeState.GetAnimationToPlay().GetFrameAtIndex(0);
-                    //Drag();
+            else {                                                          // Pet is in free fall
+                if (!isFreeFalling) {                                       // If free falling is first detected...
+                    isFreeFalling = true;                                   // Mark it as true
+                    freefallTimer = DateTime.Now;                           // Save the time in which the free fall started to calcuate the increase of velocity over time
                 }
+                PlayState(Pet.States.Fall);
+                FreeFall();
             }
         }
 
@@ -203,8 +208,7 @@ namespace desktop_pets
                 else {
                     displayedPet.activeState.ResetState();
                     GoThroughAnimFrames(displayedPet.currentAnimation);                                                 // Play the drag animation every frame
-                }
-                    
+                }    
             }
             else {                                                                                                      // Else if the system DOES NOT detect dragging...
                 if (displayedPet.activeState == null && displayedPet.dictionaryOfStates.Count > 0) {                    // If there is no assigned state and states exist for the pet...
@@ -252,6 +256,8 @@ namespace desktop_pets
         private void mousedown(object sender, MouseEventArgs e)
         {
             isDragging = true;
+            if (isFreeFalling)
+                isFreeFalling = false;
         }
 
         private void mouseup(object sender, MouseEventArgs e)
@@ -288,15 +294,12 @@ namespace desktop_pets
                 if (anim.complete) {                                                                // If the animation is marked as complete after it incremented this frame
                     displayedPet.activeState.IncrementLoop();                                       // Increment the number of animations played for the state
                     displayedPet.currentAnimation.ResetAnimation();                                 // Reset this animation back to its initial frame and complete state
-                    displayedPet.currentAnimation = displayedPet.activeState.GetAnimationToPlay();  // 
+                    displayedPet.currentAnimation = displayedPet.activeState.GetAnimationToPlay();  
                 }
                     
             }
             if (isMoving) {
                 RandomWalk();
-            }
-            if (isDragging) {
-                Drag();
             }
         }
 
@@ -310,6 +313,17 @@ namespace desktop_pets
 
         private void Drag() {
             DesktopLocation = new Point(Cursor.Position.X - XSIZE/2, Cursor.Position.Y - YSIZE/3);
+        }
+
+        private void FreeFall() {
+            int freefallvelocity = (int)(GRAVIATIONALCONSTANT * (DateTime.Now - freefallTimer).TotalSeconds); // velocity = graviationalConstant * timeSpentDropping
+            if (this.Top + freefallvelocity >= HeadPoint) {
+                isFreeFalling = false;
+                DesktopLocation = new Point(DesktopLocation.X, HeadPoint);  // Ensures that the pet cannot be dropped lower than the defined headpoint
+                PlayState(Pet.States.Idle);                                 // Play the state that comes after landing
+            }   
+            else 
+                this.Top += freefallvelocity;          
         }
 /*        private void LoadInSpritesheet(ref Dictionary<int, List<Bitmap>> bm, ref Bitmap sheet, int key)
         {

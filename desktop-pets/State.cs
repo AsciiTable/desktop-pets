@@ -54,7 +54,7 @@ namespace desktop_pets
             else if (dictionaryOfAnimations.Count > 1) {    // Randomize the index and return the animation at that index
                 numOfLoopsPlayed++;
                 animVarient = rand.Next(0, dictionaryOfAnimations.Count);
-                Console.WriteLine("Chosen Animation: " + animVarient);      // Does reach 0, but it skips it entirely; maybe because the 0 varient is somehow never reset?
+                //Console.WriteLine("Chosen Animation: " + animVarient);      // Does reach 0, but it skips it entirely; maybe because the 0 varient is somehow never reset?
                 if (dictionaryOfAnimations.ContainsKey(animVarient))
                     return dictionaryOfAnimations[animVarient];
             }

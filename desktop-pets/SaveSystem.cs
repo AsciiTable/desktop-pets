@@ -41,8 +41,15 @@ namespace desktop_pets
             List<Animation> dragAnimations = new List<Animation>();
             Animation drag_v0 = new Animation(new Bitmap("Art/Cat/drag_v0.png"), 64, 64, 1);
             dragAnimations.Add(drag_v0);
-            State drag = new State(Pet.States.Drag, dragAnimations, false, Pet.States.Idle, 1);
+            State drag = new State(Pet.States.Drag, dragAnimations, false, Pet.States.Fall, 1);
             stateLoadingDict.Add(Pet.States.Drag, drag);
+            #endregion
+            #region Fall State
+            List<Animation> fallAnimations = new List<Animation>();
+            Animation fall_v0 = new Animation(new Bitmap("Art/Cat/fall_v0.png"), 64, 64, 1);
+            fallAnimations.Add(fall_v0);
+            State fall = new State(Pet.States.Fall, fallAnimations, false, Pet.States.Idle, 1);
+            stateLoadingDict.Add(Pet.States.Fall, fall);
             #endregion
             return new Pet("Rii", stateLoadingDict);
         }
