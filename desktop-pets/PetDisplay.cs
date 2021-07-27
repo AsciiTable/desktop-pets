@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using System.Media;
 
 namespace desktop_pets
 {
@@ -54,6 +55,8 @@ namespace desktop_pets
         private bool isMoving = false;
         private bool isDragging = false;
         private bool isFreeFalling = false;
+        private bool isWantingAttention = false;
+        private bool isSatisfied = false;
 
         public PetDisplay()
         {
@@ -121,6 +124,10 @@ namespace desktop_pets
                 //this.BackgroundImage = displayedPet.activeState.GetAnimationToPlay().GetFrameAtIndex(0);
                 Drag();
             }
+            else if (isSatisfied) {
+                PlayState(Pet.States.Satisfied);
+                isSatisfied = false;
+            }
             else if (this.Location.Y >= HeadPoint) {                                // If the window is detected to have moved up from/is equal to the original Y position
                 if (!isDragging) {                                                  // If the user is not actively dragging the window
                     if (displayedPet.activeState.state == Pet.States.Drag){         // If the current state is LISTED as Drag
@@ -128,7 +135,7 @@ namespace desktop_pets
                         PlayState(Pet.States.Idle);                                 // Play the state that comes after being dragged
                     }
                     else {
-                        PlayState(displayedPet.activeState.state);              // Continue normal/auto behavior
+                        PlayState(displayedPet.activeState.state);                  // Continue normal/auto behavior
                     }
                     
                 }
@@ -255,14 +262,23 @@ namespace desktop_pets
 
         private void mousedown(object sender, MouseEventArgs e)
         {
-            isDragging = true;
+            if (isWantingAttention){
+                isSatisfied = true;
+            }
+            else {
+                isDragging = true;
+            } 
             if (isFreeFalling)
                 isFreeFalling = false;
         }
 
         private void mouseup(object sender, MouseEventArgs e)
         {
-            isDragging = false;
+            if (isWantingAttention && isSatisfied) {
+                isWantingAttention = false;
+            }
+            else if(isDragging)
+                isDragging = false;
         }
 
         #region Non-FPS based frame iterater (Deprecated)
@@ -286,17 +302,21 @@ namespace desktop_pets
                 isMoving = true;
             else if (!displayedPet.activeState.state.Equals(Pet.States.Walk) && isMoving)
                 isMoving = false;
+            else if (displayedPet.activeState.state.Equals(Pet.States.Attention) && !isWantingAttention)
+                isWantingAttention = true;
+            else if (!displayedPet.activeState.state.Equals(Pet.States.Attention) && isWantingAttention)
+                isWantingAttention = false;
+                
 
             if ((DateTime.Now - fpsTimer).TotalSeconds >= anim.fpsSecondInterval || switchNow)  // When the animation's time interval between each frame is reached...
             {
                 this.BackgroundImage = anim.GetNextFrame();                                     // Change the frame
-                fpsTimer = DateTime.Now;                                                        // Reset the timer for the next animation
                 if (anim.complete) {                                                                // If the animation is marked as complete after it incremented this frame
                     displayedPet.activeState.IncrementLoop();                                       // Increment the number of animations played for the state
                     displayedPet.currentAnimation.ResetAnimation();                                 // Reset this animation back to its initial frame and complete state
-                    displayedPet.currentAnimation = displayedPet.activeState.GetAnimationToPlay();  
+                    displayedPet.currentAnimation = displayedPet.activeState.GetAnimationToPlay();
                 }
-                    
+                fpsTimer = DateTime.Now;                                                        // Reset the timer for the next animation    
             }
             if (isMoving) {
                 RandomWalk();

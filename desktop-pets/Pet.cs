@@ -9,7 +9,7 @@ namespace desktop_pets
     {
         public enum States                                     // All avaliable states that a pet could be in
         {
-            Idle, Walk, Drag, Fall, Land, Needy, Satisfied, Null
+            Idle, Walk, Drag, Fall, Land, Attention, Satisfied, Null
         }
         #region Attributes
         public string name { get; private set; }               // Name of the pet
@@ -67,8 +67,9 @@ namespace desktop_pets
                 {
                     // Pick a new independent state
                     int chosenStateNum = rand.Next(0, listOfSelectableStates.Count);
-                    Console.WriteLine("Random number chosen: " + chosenStateNum);
                     activeState = dictionaryOfStates[listOfSelectableStates[chosenStateNum]];   // Trying to switch to drag caused an issue here (out of index error)
+                    Console.WriteLine("State chosen: " + activeState.state.ToString());
+                    activeState.PlaySFX();
                     return activeState.state;
                 }
                 else
@@ -93,6 +94,7 @@ namespace desktop_pets
                     if(activeState != null)
                         activeState.ResetState();
                     activeState = sl;
+                    activeState.PlaySFX();
                     break;
                 }
             }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Media;
 
 
 namespace desktop_pets
@@ -12,11 +13,12 @@ namespace desktop_pets
         private Dictionary<int, Animation> dictionaryOfAnimations;  // A dictionary of animations associated with this state                             
         private int animVarient;                                    // Keeps track of which animation it's playing out of the list of animations avalible
         private int minNumLoops;
-        private int numOfLoopsPlayed;
+        public int numOfLoopsPlayed;
         public bool stateComplete { get; private set; }
         private Random rand;
         public Pet.States dependantState { get; private set; }       // A state that must be played in sequence after this state
         public bool canRandomlyTrigger { get; private set; }
+        private SoundPlayer sfx;
 
         public State() {                                            // Empty, default constructor
             state = Pet.States.Null;
@@ -27,9 +29,10 @@ namespace desktop_pets
             minNumLoops = 0;
             stateComplete = false;
             canRandomlyTrigger = false;
+            numOfLoopsPlayed = 0;
         }
 
-        public State(Pet.States assignedState, List<Animation> animations, bool ableToRandomlyTrigger, Pet.States stateToPlayAterThis = Pet.States.Null, int minimumNumberOfLoops = 0) {
+        public State(Pet.States assignedState, List<Animation> animations, bool ableToRandomlyTrigger, Pet.States stateToPlayAterThis = Pet.States.Null, int minimumNumberOfLoops = 0, SoundPlayer associatedSound = null) {
             state = assignedState;
             dictionaryOfAnimations = new Dictionary<int, Animation>();
             int keyForState = 0;
@@ -43,16 +46,16 @@ namespace desktop_pets
             stateComplete = false;
             minNumLoops = minimumNumberOfLoops;
             canRandomlyTrigger = ableToRandomlyTrigger;
+            sfx = associatedSound;
+            numOfLoopsPlayed = 0;
         }
 
         public Animation GetAnimationToPlay() {
             if (dictionaryOfAnimations.Count == 1){          // Return the animation immediately
-                numOfLoopsPlayed++;
                 if (dictionaryOfAnimations.ContainsKey(0))
                     return dictionaryOfAnimations[0];
             }
             else if (dictionaryOfAnimations.Count > 1) {    // Randomize the index and return the animation at that index
-                numOfLoopsPlayed++;
                 animVarient = rand.Next(0, dictionaryOfAnimations.Count);
                 //Console.WriteLine("Chosen Animation: " + animVarient);      // Does reach 0, but it skips it entirely; maybe because the 0 varient is somehow never reset?
                 if (dictionaryOfAnimations.ContainsKey(animVarient))
@@ -74,6 +77,16 @@ namespace desktop_pets
                 if(rand.Next(0,2) >= 1)
                     stateComplete = true;
             } 
+        }
+
+        public void RequestFinishingState() {
+            stateComplete = true;
+        }
+
+        public void PlaySFX() {
+            if (sfx != null) {
+                sfx.Play();
+            }
         }
     }
 }
