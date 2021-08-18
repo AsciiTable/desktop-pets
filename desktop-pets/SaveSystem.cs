@@ -26,7 +26,7 @@ namespace desktop_pets
             Animation idle_v1 = new Animation(new Bitmap("Art/cat/idle_blink.png"), 64, 64, 6);
             idleAnimations.Add(idle_v0);
             idleAnimations.Add(idle_v1);
-            State idle = new State(Pet.States.Idle, idleAnimations, true, Pet.States.Null, 1);
+            State idle = new State(Pet.States.Idle, idleAnimations, true, Pet.States.Null, 15);
             stateLoadingDict.Add(Pet.States.Idle, idle);
             #endregion
             #region Walk State
@@ -56,14 +56,14 @@ namespace desktop_pets
             List<Animation> attentionAnimations = new List<Animation>();
             Animation attention_v0 = new Animation(new Bitmap("Art/Cat/attention_v0.png"), 64, 64, 6);
             attentionAnimations.Add(attention_v0);
-            State attention = new State(Pet.States.Attention, attentionAnimations, true, Pet.States.Idle, 2, new SoundPlayer("SFX/Cat/rii_attention.wav"));
+            State attention = new State(Pet.States.Attention, attentionAnimations, true, Pet.States.Null, 2, new SoundPlayer("SFX/Cat/rii_attention.wav"));
             stateLoadingDict.Add(Pet.States.Attention, attention);
             #endregion
             #region Satisfied State
             List<Animation> satisfiedAnimations = new List<Animation>();
             Animation satisfied_v0 = new Animation(new Bitmap("Art/Cat/satisfied_v0.png"), 64, 64, 6);
             satisfiedAnimations.Add(satisfied_v0);
-            State satisfied = new State(Pet.States.Satisfied, satisfiedAnimations, false, Pet.States.Walk, 1, new SoundPlayer("SFX/Cat/rii_satisfied.wav"));
+            State satisfied = new State(Pet.States.Satisfied, satisfiedAnimations, false, Pet.States.Null, 1, new SoundPlayer("SFX/Cat/rii_satisfied.wav"));
             stateLoadingDict.Add(Pet.States.Satisfied, satisfied);
             #endregion
             return new Pet("Rii", stateLoadingDict);

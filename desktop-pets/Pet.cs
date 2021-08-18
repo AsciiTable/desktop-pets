@@ -55,6 +55,7 @@ namespace desktop_pets
                 {
                     // Pick a new independent state
                     int chosenStateNum = rand.Next(0, listOfSelectableStates.Count);
+                    activeState.ResetState();
                     activeState = dictionaryOfStates[listOfSelectableStates[chosenStateNum]];   // Trying to switch to drag caused an issue here (out of index error)
                     Console.WriteLine("State chosen: " + activeState.state.ToString());
                     activeState.PlaySFX();
@@ -81,7 +82,9 @@ namespace desktop_pets
                 if (s == sl.state) {
                     if(activeState != null)
                         activeState.ResetState();
+                    Console.Write("Immediately changed from " + activeState.state.ToString() + " to ");
                     activeState = sl;
+                    Console.WriteLine(activeState.state.ToString() + ".");
                     activeState.PlaySFX();
                     break;
                 }

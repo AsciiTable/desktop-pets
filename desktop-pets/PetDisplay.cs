@@ -53,11 +53,11 @@ namespace desktop_pets
 
         // Mode bools
         private bool isMoving = false;
-        private bool flipRequested = false;
         private bool isDragging = false;
         private bool isFreeFalling = false;
         private bool isWantingAttention = false;
         private bool isSatisfied = false;
+        private Pet.States previousState = Pet.States.Null;
 
         public PetDisplay()
         {
@@ -108,17 +108,40 @@ namespace desktop_pets
 
             HeadPoint = _DisplayHeight - YSIZE + SINKLEVEL;
             this.Location = new Point(0, HeadPoint);
+
+            DoubleBuffered = true;
+
+            if (displayedPet.activeState != null) {
+                switch (displayedPet.activeState.state) {
+                    case Pet.States.Walk:
+                        isMoving = true;
+                        break;
+                    case Pet.States.Drag:
+                        isDragging = true;
+                        break;
+                    case Pet.States.Fall:
+                        isFreeFalling = true;
+                        break;
+                    case Pet.States.Attention:
+                        isWantingAttention = true;
+                        break;
+                    case Pet.States.Satisfied:
+                        isSatisfied = true;
+                        break;
+                    default:
+                        break;
+                }
+            }
+
             timer.Interval = 10;
             timer.Tick += new EventHandler(OnUpdate);
             timer.Start();
 
             fpsTimer = DateTime.Now;
-
-            DoubleBuffered = true;
         }
 
 
-        private void OnUpdate(object sender, EventArgs e) {
+        private void OnUpdate(object sender, EventArgs e) { 
             if (isDragging) {                                                       // If pet is being dragged
                 PlayState(Pet.States.Drag);                                         // Play the drag state
                 Drag();                                                             // Function that allows the pet to be dragged around the screen
@@ -171,6 +194,7 @@ namespace desktop_pets
             if (isDragging) {                                                                                           // IF the system automatically detects dragging...
                 if (displayedPet.activeState == null || displayedPet.activeState.state != Pet.States.Drag) {            // If the current state is NOT Pet.States.Drag...
                     displayedPet.ImmediatelyChangeToThisState(Pet.States.Drag);                                         // Change the state to Drag
+                    previousState = displayedPet.activeState.state;
                     if (displayedPet.currentAnimation != null)                                                          // And if the current animation isn't null (safe-guarding against glitches)
                         displayedPet.currentAnimation.ResetAnimation();                                                 // Reset the current animation for future reuse
                     SetNewAnimActive(true);
@@ -186,19 +210,23 @@ namespace desktop_pets
                         displayedPet.currentAnimation.ResetAnimation();                                                 // Reset the current animation
                     displayedPet.AutoPickNextState();                                                                   // Auto pick a state to be in
                     SetNewAnimActive(true); 
-
                 }
                 else if (displayedPet.activeState.state != selectedState) {                                             // Else if the current state does not match the requested state...
                     displayedPet.ImmediatelyChangeToThisState(selectedState);                                           // Change the state to requested state
+                    previousState = displayedPet.activeState.state;
                     if (displayedPet.currentAnimation != null)                                                          // And if the current animation isn't null (safe-guarding against glitches)
                         displayedPet.currentAnimation.ResetAnimation();                                                 // Reset the current animation for future reuse
                     SetNewAnimActive(true);
                 }
                 else if (displayedPet.activeState.stateComplete) {                                                      // If the state is determined to be complete after the last animation loop...
+                    previousState = displayedPet.activeState.state;
                     displayedPet.currentAnimation.ResetAnimation();                                                     // Reset the animation that was just running (just in case it didn't reset before)
                     displayedPet.activeState.ResetState();                                                              // Reset the entire state so that it can fully run again
                     displayedPet.AutoPickNextState();                                                                   // Auto pick the next state that should trigger after this
-                    SetNewAnimActive(true);                                                                             // Set and activate the new animation for the new state
+                    if (previousState.Equals(displayedPet.activeState.state))
+                        SetNewAnimActive(false);                                                                        // Set and activate the new animation for the new state
+                    else
+                        SetNewAnimActive(true);
                 }
                 else {                                                                                                  // Else if the state is not complete...
                     if (displayedPet.currentAnimation == null) {                                                        // If the animation is (somehow) null
@@ -206,7 +234,8 @@ namespace desktop_pets
                     }
                     else if (displayedPet.currentAnimation.complete) {                                                  // Else if the current animation is marked as complete
                         displayedPet.currentAnimation.ResetAnimation();                                                 // Reset the animation
-                        SetNewAnimActive(false);                                                                        // And auto pick a new animation from the same state to follow & play
+                        displayedPet.activeState.IncrementLoop();
+                        SetNewAnimActive(false);                                                                         // And auto pick a new animation from the same state to follow & play
                     }
                     else {                                                                                              // Else if NEITHER the animation nor state are complete...
                         GoThroughAnimFrames(displayedPet.currentAnimation);                                             // Iterate through the animation frames as per usual
@@ -262,18 +291,16 @@ namespace desktop_pets
         #endregion
 
         private void GoThroughAnimFrames(Animation anim, bool switchNow = false) {              // FPS-based animation
+            #region State Management (may move to a more intuative place if need be)
             if (displayedPet.activeState.state.Equals(Pet.States.Walk) && !isMoving) {
                 isMoving = true;
                 int r = rand.Next(0, 2);
                 if (r == 1) {                                                                   // Move Right
                     leftright = 1;
-                    displayedPet.activeState.FlipAllAnimationsInState(false);
                 }
                 else {                                                                          // Move Left
                     leftright = -1;
-                    displayedPet.activeState.FlipAllAnimationsInState(true);
                 }
-                Console.WriteLine(r);
             }
             else if (!displayedPet.activeState.state.Equals(Pet.States.Walk) && isMoving) {
                 isMoving = false;
@@ -284,18 +311,14 @@ namespace desktop_pets
                 isWantingAttention = true;
             else if (!displayedPet.activeState.state.Equals(Pet.States.Attention) && isWantingAttention)
                 isWantingAttention = false;
-                
+            #endregion
 
-            if ((DateTime.Now - fpsTimer).TotalSeconds >= anim.fpsSecondInterval || switchNow)  // When the animation's time interval between each frame is reached...
+            if ((DateTime.Now - fpsTimer).TotalSeconds >= anim.fpsSecondInterval || switchNow)              // When the animation's time interval between each frame is reached...
             {
-                this.BackgroundImage = anim.GetNextFrame();                                     // Change the frame
-                if (anim.complete) {                                                                // If the animation is marked as complete after it incremented this frame
-                    displayedPet.activeState.IncrementLoop();                                       // Increment the number of animations played for the state
-                    displayedPet.currentAnimation.ResetAnimation();                                 // Reset this animation back to its initial frame and complete state
-                    displayedPet.currentAnimation = displayedPet.activeState.GetAnimationToPlay();
-                }
-                fpsTimer = DateTime.Now;                                                        // Reset the timer for the next animation    
+                this.BackgroundImage = anim.GetNextFrame();                                                 // Change the frame
+                fpsTimer = DateTime.Now;                                                                    // Reset the timer for the next animation    
             }
+
             if (isMoving) {
                 RandomWalk(leftright);
             }
@@ -303,6 +326,12 @@ namespace desktop_pets
 
         private void RandomWalk(int dir = 1) {
             this.Left += dir;                                                // Move right (+1) or left (-1) depending on the direction value
+
+            if(dir >= 0)
+                displayedPet.activeState.FlipAllAnimationsInState(false);
+            else
+                displayedPet.activeState.FlipAllAnimationsInState(true);
+
             if (this.Left < XSIZE * -1) {                                    // If the pet has gone off the side of the screen...
                 this.Left = _DisplayWidth;                                   // Set it back to the right of the screen
             }
@@ -325,22 +354,6 @@ namespace desktop_pets
             else 
                 this.Top += freefallvelocity;          
         }
-/*        private void LoadInSpritesheet(ref Dictionary<int, List<Bitmap>> bm, ref Bitmap sheet, int key)
-        {
-            List<Bitmap> store = new List<Bitmap>();
-            int col = sheet.Width / XSIZE;
-            int row = sheet.Height / YSIZE;
-            for (int r = 0; r < row; r++)
-            {
-                for (int c = 0; c < col; c++)
-                {
-                    // Add checkers to look for content just in case there is a non-full row at the end
-                    Rectangle cloneRect = new Rectangle(XSIZE * c, YSIZE * r, XSIZE, YSIZE);
-                    store.Add(sheet.Clone(cloneRect, sheet.PixelFormat));
-                }
-            }
-            bm.Add(key, store);
-        }*/
         private void menuItemExit_Click(object Sender, EventArgs e) {
             this.Close();
         }

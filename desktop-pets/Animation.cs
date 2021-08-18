@@ -5,10 +5,10 @@ using System.Drawing;
 namespace desktop_pets
 {
     /** TO DOs (+ = essential, ~ = for custom dlc)
-     *  + Play(): play the animation directly through this object, if objective & possible.
+     *  + Play(): play the animation directly through this object, if objective & possible.                             -- Complete, with GetNextFrame()
      *      Issues: To show each frame, the BackgrounImage (Bitmap) of a Form object must be changed
      *      Temporarily solved with an untested external call to iterate through frames
-     *  + Change the durationInFrames (based on number of frames) to FPS (based on time)
+     *  + Change the durationInFrames (based on number of frames) to FPS (based on time)                                -- Complete, done externally in PetDisplay
      *  +~ Transparancy automation: currently believed to be impossible and must use a certain 
      *      color as a key for the system to know which color specifically to make transparent
      *      when rendering it to the screen.
@@ -42,7 +42,7 @@ namespace desktop_pets
             ysize = 0;
             numOfFrames = 0;
             frameIndex = 0;
-            complete = true;
+            complete = false;
             frames = new List<Bitmap>();
             fpsSecondInterval = 0f;
             isFlippedX = false;
@@ -52,13 +52,13 @@ namespace desktop_pets
         {
             fullSpritesheet = spriteSheet;
             fps = FPS;
-            fpsSecondInterval = (float)1 / (float)fps;
-            Console.WriteLine("Time: " + fpsSecondInterval);
+            fpsSecondInterval = 1.0f / (float)fps;
+            //Console.WriteLine("Time: " + fpsSecondInterval);
             xsize = numXPixels;
             ysize = numYPixels;
             numOfFrames = CalcuateNumberOfFrames();
             frameIndex = 0;
-            complete = true;
+            complete = false;
             frames = new List<Bitmap>();
             if (numOfFrames > 0) 
                 frames = LoadInSpritesheet();
