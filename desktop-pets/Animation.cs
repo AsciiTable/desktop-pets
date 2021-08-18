@@ -29,6 +29,7 @@ namespace desktop_pets
 
         #region Object Checkers
         private int frameIndex;                     // Keeps track of which frame the active animation is currently on
+        public bool isFlippedX;
         public bool complete { get; private set; }  // Signals the completion of an animation cycle
         private List<Bitmap> frames;                // The divided Bitmap that is used for animation cycles
         #endregion
@@ -44,6 +45,7 @@ namespace desktop_pets
             complete = true;
             frames = new List<Bitmap>();
             fpsSecondInterval = 0f;
+            isFlippedX = false;
         }
 
         public Animation(Bitmap spriteSheet, int numXPixels = 0, int numYPixels = 0, int FPS = 10)
@@ -60,6 +62,7 @@ namespace desktop_pets
             frames = new List<Bitmap>();
             if (numOfFrames > 0) 
                 frames = LoadInSpritesheet();
+            isFlippedX = false;
         }
         #endregion
 
@@ -111,6 +114,20 @@ namespace desktop_pets
         public void ResetAnimation() {      // An external call to reset the animation to the beginning
             frameIndex = 0;
             complete = false;
+            isFlippedX = false;
+        }
+
+        public void FlipAnimationX(bool flipUnflip = true) {
+            if (!isFlippedX && flipUnflip) {                            // If the animation is not currently flipped and is requested to be flipped
+                foreach (Bitmap bm in frames)
+                    bm.RotateFlip(RotateFlipType.RotateNoneFlipX);
+                isFlippedX = true;
+            }
+            else if (isFlippedX && !flipUnflip) {                       // If the animation is currently flipped and is requested not to be flipped
+                foreach (Bitmap bm in frames)
+                    bm.RotateFlip(RotateFlipType.RotateNoneFlipX);
+                isFlippedX = false;
+            }
         }
         #endregion
 

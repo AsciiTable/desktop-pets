@@ -12,6 +12,7 @@ namespace desktop_pets
         public Pet.States state { get; private set; }              // Defines which state the pet is currently in
         private Dictionary<int, Animation> dictionaryOfAnimations;  // A dictionary of animations associated with this state                             
         private int animVarient;                                    // Keeps track of which animation it's playing out of the list of animations avalible
+        private bool isFlippedX;
         private int minNumLoops;
         public int numOfLoopsPlayed;
         public bool stateComplete { get; private set; }
@@ -30,6 +31,7 @@ namespace desktop_pets
             stateComplete = false;
             canRandomlyTrigger = false;
             numOfLoopsPlayed = 0;
+            isFlippedX = false;
         }
 
         public State(Pet.States assignedState, List<Animation> animations, bool ableToRandomlyTrigger, Pet.States stateToPlayAterThis = Pet.States.Null, int minimumNumberOfLoops = 0, SoundPlayer associatedSound = null) {
@@ -48,6 +50,7 @@ namespace desktop_pets
             canRandomlyTrigger = ableToRandomlyTrigger;
             sfx = associatedSound;
             numOfLoopsPlayed = 0;
+            isFlippedX = false;
         }
 
         public Animation GetAnimationToPlay() {
@@ -86,6 +89,19 @@ namespace desktop_pets
         public void PlaySFX() {
             if (sfx != null) {
                 sfx.Play();
+            }
+        }
+
+        public void FlipAllAnimationsInState(bool flipUnflip = true) {
+            if (!isFlippedX && flipUnflip) {                            // If the animation is not currently flipped and is requested to be flipped
+                foreach (Animation anim in dictionaryOfAnimations.Values)
+                    anim.FlipAnimationX(true);
+                isFlippedX = true;
+            }
+            else if (isFlippedX && !flipUnflip)  {                       // If the animation is currently flipped and is requested not to be flipped
+                foreach (Animation anim in dictionaryOfAnimations.Values)
+                    anim.FlipAnimationX(true);
+                isFlippedX = false;
             }
         }
     }

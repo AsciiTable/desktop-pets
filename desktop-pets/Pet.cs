@@ -37,18 +37,6 @@ namespace desktop_pets
             listOfSelectableStates = new List<States>(dictionaryOfStates.Keys);
             //dependantStates = new List<States>();
             foreach (State s in dictOfStates.Values) {
-                /*if (s.dependantState != States.Null && !dependantStates.Contains(s.dependantState))
-                {
-                    dependantStates.Add(s.dependantState);
-                    foreach (States sl in listOfSelectableStates)
-                    {
-                        if (sl.Equals(s.dependantState))
-                        {
-                            listOfSelectableStates.Remove(sl);
-                            break;
-                        }
-                    }
-                }*/
                 if (!s.canRandomlyTrigger)
                     listOfSelectableStates.Remove(s.state);
             }

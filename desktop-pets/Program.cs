@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Diagnostics;
+using System.Windows;
 
 namespace desktop_pets
 {
@@ -18,5 +20,10 @@ namespace desktop_pets
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new PetDisplay());
         }
+
+/*        public void GetProcesses() {
+            Process[] plist = Process.GetProcesses();
+            plist[0].current
+        }*/
     }
 }

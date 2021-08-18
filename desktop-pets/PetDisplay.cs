@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
-using System.Media;
+
 
 namespace desktop_pets
 {
@@ -49,10 +49,11 @@ namespace desktop_pets
 
         private int HeadPoint = 0;
         private Pet displayedPet;
-
+        private int leftright = 0;
 
         // Mode bools
         private bool isMoving = false;
+        private bool flipRequested = false;
         private bool isDragging = false;
         private bool isFreeFalling = false;
         private bool isWantingAttention = false;
@@ -107,8 +108,8 @@ namespace desktop_pets
 
             HeadPoint = _DisplayHeight - YSIZE + SINKLEVEL;
             this.Location = new Point(0, HeadPoint);
-            timer.Interval = 1;
-            timer.Tick += new EventHandler(Timer_Tick);
+            timer.Interval = 10;
+            timer.Tick += new EventHandler(OnUpdate);
             timer.Start();
 
             fpsTimer = DateTime.Now;
@@ -117,16 +118,14 @@ namespace desktop_pets
         }
 
 
-        private void Timer_Tick(object sender, EventArgs e) {
+        private void OnUpdate(object sender, EventArgs e) {
             if (isDragging) {                                                       // If pet is being dragged
-                PlayState(Pet.States.Drag);
-                //displayedPet.ImmediatelyChangeToThisState(Pet.States.Drag);
-                //this.BackgroundImage = displayedPet.activeState.GetAnimationToPlay().GetFrameAtIndex(0);
-                Drag();
+                PlayState(Pet.States.Drag);                                         // Play the drag state
+                Drag();                                                             // Function that allows the pet to be dragged around the screen
             }
-            else if (isSatisfied) {
-                PlayState(Pet.States.Satisfied);
-                isSatisfied = false;
+            else if (isSatisfied) {                                                 // If the pet is satisfied (occurs after they are pet when asking for attention)
+                PlayState(Pet.States.Satisfied);                                    // Play the satisfied state
+                isSatisfied = false;                                                // Set satisfied to false once the pet is satisfied
             }
             else if (this.Location.Y >= HeadPoint) {                                // If the window is detected to have moved up from/is equal to the original Y position
                 if (!isDragging) {                                                  // If the user is not actively dragging the window
@@ -137,55 +136,19 @@ namespace desktop_pets
                     else {
                         PlayState(displayedPet.activeState.state);                  // Continue normal/auto behavior
                     }
-                    
                 }
-                if (isFreeFalling)
-                    isFreeFalling = false;
+                if (isFreeFalling)                                                  // If free falling is still true dispite having finished falling
+                    isFreeFalling = false;                                          // Set the free fall to false
             }
             else {                                                          // Pet is in free fall
                 if (!isFreeFalling) {                                       // If free falling is first detected...
                     isFreeFalling = true;                                   // Mark it as true
                     freefallTimer = DateTime.Now;                           // Save the time in which the free fall started to calcuate the increase of velocity over time
                 }
-                PlayState(Pet.States.Fall);
+                PlayState(Pet.States.Fall);                                  
                 FreeFall();
             }
         }
-
-        #region Drag reference
-        /*private void Timer_Tick(object sender, EventArgs e) {
-            if (this.Location.Y >= HeadPoint)
-            {
-                if (!isDragging)
-                {
-                    *//*if (is_fly)
-                    {
-                        is_fly = false;
-                        fc1 = 0;
-                        fc2 = 0;
-                    }*//*
-                    //moverightDEP();
-                    PlayState(displayedPet.activeState.state);
-                    //PlayState(Pet.States.Walk);
-                }
-                else
-                {
-                   //dragmode();
-                }
-            }
-            else
-            {
-                if (!isDragging)
-                {
-                    //flymode();
-                }
-                else
-                {
-                    //dragmode();
-                }
-            }
-        }*/
-        #endregion
 
         #region Move reference (Deprecated)
         private void moverightDEP() {
@@ -223,6 +186,7 @@ namespace desktop_pets
                         displayedPet.currentAnimation.ResetAnimation();                                                 // Reset the current animation
                     displayedPet.AutoPickNextState();                                                                   // Auto pick a state to be in
                     SetNewAnimActive(true); 
+
                 }
                 else if (displayedPet.activeState.state != selectedState) {                                             // Else if the current state does not match the requested state...
                     displayedPet.ImmediatelyChangeToThisState(selectedState);                                           // Change the state to requested state
@@ -298,11 +262,25 @@ namespace desktop_pets
         #endregion
 
         private void GoThroughAnimFrames(Animation anim, bool switchNow = false) {              // FPS-based animation
-            if (displayedPet.activeState.state.Equals(Pet.States.Walk) && !isMoving)
+            if (displayedPet.activeState.state.Equals(Pet.States.Walk) && !isMoving) {
                 isMoving = true;
-            else if (!displayedPet.activeState.state.Equals(Pet.States.Walk) && isMoving)
+                int r = rand.Next(0, 2);
+                if (r == 1) {                                                                   // Move Right
+                    leftright = 1;
+                    displayedPet.activeState.FlipAllAnimationsInState(false);
+                }
+                else {                                                                          // Move Left
+                    leftright = -1;
+                    displayedPet.activeState.FlipAllAnimationsInState(true);
+                }
+                Console.WriteLine(r);
+            }
+            else if (!displayedPet.activeState.state.Equals(Pet.States.Walk) && isMoving) {
                 isMoving = false;
-            else if (displayedPet.activeState.state.Equals(Pet.States.Attention) && !isWantingAttention)
+                displayedPet.activeState.FlipAllAnimationsInState(false);
+                leftright = 0;
+            }  
+            if (displayedPet.activeState.state.Equals(Pet.States.Attention) && !isWantingAttention)
                 isWantingAttention = true;
             else if (!displayedPet.activeState.state.Equals(Pet.States.Attention) && isWantingAttention)
                 isWantingAttention = false;
@@ -319,14 +297,16 @@ namespace desktop_pets
                 fpsTimer = DateTime.Now;                                                        // Reset the timer for the next animation    
             }
             if (isMoving) {
-                RandomWalk();
+                RandomWalk(leftright);
             }
         }
 
-        private void RandomWalk() {
-            int rightleft = rand.Next(0, 2);
-            this.Left += 1;
-            if (this.Left > _DisplayWidth) {                                 // If the pet has gone off the side of the screen...
+        private void RandomWalk(int dir = 1) {
+            this.Left += dir;                                                // Move right (+1) or left (-1) depending on the direction value
+            if (this.Left < XSIZE * -1) {                                    // If the pet has gone off the side of the screen...
+                this.Left = _DisplayWidth;                                   // Set it back to the right of the screen
+            }
+            else if (this.Left > _DisplayWidth) {                            // If the pet has gone off the side of the screen...
                 this.Left = XSIZE * -1;                                      // Set it back to the left of the screen
             }
         }
