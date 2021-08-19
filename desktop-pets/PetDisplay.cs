@@ -17,25 +17,12 @@ namespace desktop_pets
         private int _DisplayHeight = SystemInformation.WorkingArea.Height;
         private int _DisplayWidth = SystemInformation.WorkingArea.Width;
         private Bitmap defaultLayer = new Bitmap("Art/Cat/idle.png");
-        #region Icon Fields
+/*        #region Icon Fields
         private NotifyIcon notifyIcon;
         private ContextMenu contextMenu;
         private MenuItem menuItemExit;
-        #endregion
-        #region Art Fields (Should be Deprecated)
-        #region Idle
-        //private Animation idle_v0 = new Animation(new Bitmap("Art/cat/idle_blink"), 64, 64, 10);
-        //private State(Pet.States.Idle,)
-        #endregion
-        #region Walking
-        private Bitmap walk_v0 = new Bitmap("Art/Cat/walk_anim.png");                       // Default walking spritesheet
-        private Bitmap walk_v1 = new Bitmap("Art/Cat/walk_anim_v1.png");                    // Blinking variation walking spritesheet
-        private Dictionary<int, List<Bitmap>> walk = new Dictionary<int, List<Bitmap>>();   // Dictionary to store Bitmaps and their indexes. 0 is default, > 0 is variation
-        private int walkInd = 0;                                                            // Keeps track of the frame that the pet is currently walking at
-        private int walkVarient = 0;                                                        // Determines which walk variation to play
-        private bool walkComplete = false;
-        #endregion
-        #endregion
+        private MenuItem menuItemManagement;
+        #endregion*/
 
         private Timer timer = new Timer();
         private DateTime fpsTimer = new DateTime();
@@ -71,22 +58,27 @@ namespace desktop_pets
         }
 
         private void PetDisplayForm_Load(object sender, EventArgs e) {
-            #region System Tray Components
+/*            #region System Tray Components
             components = new Container();
             contextMenu = new ContextMenu();
             menuItemExit = new MenuItem();
-            contextMenu.MenuItems.AddRange(new MenuItem[] { menuItemExit }); // Make new context menu with listed items
+            menuItemManagement = new MenuItem();
+            contextMenu.MenuItems.AddRange(new MenuItem[] { menuItemExit, menuItemManagement }); // Make new context menu with listed items
             // Menu Item Exit
-            menuItemExit.Index = 0;
+            menuItemExit.Index = 1;
             menuItemExit.Text = "Exit";
             menuItemExit.Click += new EventHandler(this.menuItemExit_Click); // If clicked, exit
+            // Menu Item Management
+            menuItemManagement.Index = 0;
+            menuItemManagement.Text = "Management";
+            menuItemManagement.Click += new EventHandler(this.menuItemManagement_Click);
             // Icon
             notifyIcon = new NotifyIcon(this.components);   // Initialize NotifyIcon object
             notifyIcon.Icon = new Icon("Art/icon.ico");     // Sets the icon that appears in the systray
             notifyIcon.ContextMenu = contextMenu;           // Context menu will open when right clicked
             notifyIcon.Text = "Desktop Pets";
             notifyIcon.Visible = true;
-            #endregion
+            #endregion*/
 
             /*            #region Load in Spritesheets
                         LoadInSpritesheet(ref walk, ref walk_v0, 0);    // Walk v0
@@ -173,23 +165,6 @@ namespace desktop_pets
             }
         }
 
-        #region Move reference (Deprecated)
-        private void moverightDEP() {
-            this.Left += 1;
-            if (this.Left > _DisplayWidth) {                                // If the pet has gone off the side of the screen...
-                this.Left = XSIZE *-1;                                      // Set it back to the left of the screen
-            }
-            // Randomly swap to blinking & walking
-            if (walkComplete)
-            {
-                walkVarient = rand.Next(0, walk.Count);
-                walkComplete = false;
-            }
-            GoThroughFrames(walk[walkVarient], ref walkInd, 10);
-            // else go through blink walk varient
-        }
-        #endregion
-
         private void PlayState(Pet.States selectedState = Pet.States.Null) {
             if (isDragging) {                                                                                           // IF the system automatically detects dragging...
                 if (displayedPet.activeState == null || displayedPet.activeState.state != Pet.States.Drag) {            // If the current state is NOT Pet.States.Drag...
@@ -274,22 +249,6 @@ namespace desktop_pets
                 isDragging = false;
         }
 
-        #region Non-FPS based frame iterater (Deprecated)
-        // use ref keyword to pass by reference
-        private void GoThroughFrames(List<Bitmap> bm, ref int index, int fps){
-            count++;
-            if (count % fps == 0) {                     // This needs to eventually be scaled off of time, not frame count to allow for uniformity
-                this.BackgroundImage = bm[index];
-                index++;
-                count = 0;                              // Resets the frames count so that we don't eventually overflow the value
-                if (index >= bm.Count){                 // If we finish cycling through the spritesheet...
-                    index = 0;                          // Reset the frame index to 0
-                    walkComplete = true;                // Tell everyone else that the walk cycle has been completed
-                }
-            }   
-        }
-        #endregion
-
         private void GoThroughAnimFrames(Animation anim, bool switchNow = false) {              // FPS-based animation
             #region State Management (may move to a more intuative place if need be)
             if (displayedPet.activeState.state.Equals(Pet.States.Walk) && !isMoving) {
@@ -354,8 +313,12 @@ namespace desktop_pets
             else 
                 this.Top += freefallvelocity;          
         }
-        private void menuItemExit_Click(object Sender, EventArgs e) {
+/*        private void menuItemExit_Click(object Sender, EventArgs e) {
             this.Close();
         }
+
+        private void menuItemManagement_Click(object Sender, EventArgs e) {
+            Console.WriteLine("Management menu opened.");
+        }*/
     }
 }

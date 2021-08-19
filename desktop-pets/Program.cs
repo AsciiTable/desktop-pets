@@ -18,7 +18,8 @@ namespace desktop_pets
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new PetDisplay());
+            //Application.Run(new PetDisplay());
+            Application.Run(new ManagementDisplay());
         }
 
 /*        public void GetProcesses() {
