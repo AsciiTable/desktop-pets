@@ -62,7 +62,6 @@ namespace desktop_pets
             this.petPicture5 = new System.Windows.Forms.PictureBox();
             this.petPicture6 = new System.Windows.Forms.PictureBox();
             this.petPicture7 = new System.Windows.Forms.PictureBox();
-            this.nameLabel0 = new System.Windows.Forms.Label();
             this.nameLabel1 = new System.Windows.Forms.Label();
             this.nameLabel2 = new System.Windows.Forms.Label();
             this.nameLabel3 = new System.Windows.Forms.Label();
@@ -71,6 +70,7 @@ namespace desktop_pets
             this.nameLabel6 = new System.Windows.Forms.Label();
             this.nameLabel7 = new System.Windows.Forms.Label();
             this.editButton0 = new System.Windows.Forms.Button();
+            this.nameLabel0 = new System.Windows.Forms.Label();
             this.titleLabel = new System.Windows.Forms.Label();
             this.tableLayoutPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.petPicture0)).BeginInit();
@@ -573,20 +573,6 @@ namespace desktop_pets
             this.petPicture7.TabIndex = 23;
             this.petPicture7.TabStop = false;
             // 
-            // nameLabel0
-            // 
-            this.nameLabel0.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.nameLabel0.AutoSize = true;
-            this.nameLabel0.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.nameLabel0.Location = new System.Drawing.Point(53, 2);
-            this.nameLabel0.MaximumSize = new System.Drawing.Size(145, 45);
-            this.nameLabel0.MinimumSize = new System.Drawing.Size(145, 45);
-            this.nameLabel0.Name = "nameLabel0";
-            this.nameLabel0.Size = new System.Drawing.Size(145, 45);
-            this.nameLabel0.TabIndex = 24;
-            this.nameLabel0.Text = "PET NAME HERE!!!";
-            this.nameLabel0.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
             // nameLabel1
             // 
             this.nameLabel1.Anchor = System.Windows.Forms.AnchorStyles.Left;
@@ -696,6 +682,20 @@ namespace desktop_pets
             this.editButton0.TabIndex = 32;
             this.editButton0.Text = "Edit";
             this.editButton0.UseVisualStyleBackColor = true;
+            // 
+            // nameLabel0
+            // 
+            this.nameLabel0.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.nameLabel0.AutoSize = true;
+            this.nameLabel0.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.nameLabel0.Location = new System.Drawing.Point(53, 2);
+            this.nameLabel0.MaximumSize = new System.Drawing.Size(145, 45);
+            this.nameLabel0.MinimumSize = new System.Drawing.Size(145, 45);
+            this.nameLabel0.Name = "nameLabel0";
+            this.nameLabel0.Size = new System.Drawing.Size(145, 45);
+            this.nameLabel0.TabIndex = 24;
+            this.nameLabel0.Text = "PET NAME HERE!!!";
+            this.nameLabel0.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // titleLabel
             // 
