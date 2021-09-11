@@ -21,6 +21,9 @@ namespace desktop_pets
         public Animation currentAnimation { get; set; }
         //private List<States> dependantStates;
         private Random rand;
+        public int XSIZE = 0;
+        public int YSIZE = 0;
+        public Color transparentColor;
 
         public Pet() {
             name = "";
@@ -29,9 +32,10 @@ namespace desktop_pets
             activeState = null;
             //dependantStates = new List<States>();
             rand = new Random();
-        } 
+            transparentColor = new Color();
+        }
 
-        public Pet(string petName, Dictionary<States, State> dictOfStates) {
+        public Pet(string petName, Dictionary<States, State> dictOfStates, Color transcolor, int xsize = 64, int ysize = 64) {
             name = petName;
             dictionaryOfStates = dictOfStates;
             listOfSelectableStates = new List<States>(dictionaryOfStates.Keys);
@@ -45,6 +49,9 @@ namespace desktop_pets
             else
                 activeState = null;
             rand = new Random();
+            XSIZE = xsize;
+            YSIZE = ysize;
+            transparentColor = transcolor;
         }
 
 

@@ -66,8 +66,61 @@ namespace desktop_pets
             State satisfied = new State(Pet.States.Satisfied, satisfiedAnimations, false, Pet.States.Null, 1, new SoundPlayer("SFX/Cat/rii_satisfied.wav"));
             stateLoadingDict.Add(Pet.States.Satisfied, satisfied);
             #endregion
-            return new Pet("Rii", stateLoadingDict);
+            return new Pet("Rii", stateLoadingDict, new Bitmap("Art/cat/idle_v0.png").GetPixel(0,0),64,64);
         }
-
+        // The non-DLC loading function that only loads Toby the Default Dog
+        public static Pet LoadTobyTheDog()
+        {
+            Dictionary<Pet.States, State> stateLoadingDict = new Dictionary<Pet.States, State>();
+            #region Idle State
+            List<Animation> idleAnimations = new List<Animation>();
+            Animation idle_v0 = new Animation(new Bitmap("Art/Dog/idle_v0.png"), 100, 100, 10);
+            Animation idle_v1 = new Animation(new Bitmap("Art/Dog/idle_v1.png"), 100, 100, 10);
+            Animation idle_v2 = new Animation(new Bitmap("Art/Dog/idle_v2.png"), 100, 100, 10);
+            idleAnimations.Add(idle_v0);
+            idleAnimations.Add(idle_v1);
+            idleAnimations.Add(idle_v2);
+            State idle = new State(Pet.States.Idle, idleAnimations, true, Pet.States.Null, 15);
+            stateLoadingDict.Add(Pet.States.Idle, idle);
+            #endregion
+            #region Walk State
+            List<Animation> walkAnimations = new List<Animation>();
+            Animation walk_v0 = new Animation(new Bitmap("Art/Dog/walk_v0.png"), 100, 100, 6);
+            Animation walk_v1 = new Animation(new Bitmap("Art/Dog/walk_v1.png"), 100, 100, 6);
+            walkAnimations.Add(walk_v0);
+            walkAnimations.Add(walk_v1);
+            State walk = new State(Pet.States.Walk, walkAnimations, true, Pet.States.Null, 2);
+            stateLoadingDict.Add(Pet.States.Walk, walk);
+            #endregion
+            #region Drag State
+            List<Animation> dragAnimations = new List<Animation>();
+            Animation drag_v0 = new Animation(new Bitmap("Art/Dog/drag_v0.png"), 100, 100, 1);
+            dragAnimations.Add(drag_v0);
+            State drag = new State(Pet.States.Drag, dragAnimations, false, Pet.States.Fall, 1);
+            stateLoadingDict.Add(Pet.States.Drag, drag);
+            #endregion
+            #region Fall State
+            List<Animation> fallAnimations = new List<Animation>();
+            Animation fall_v0 = new Animation(new Bitmap("Art/Dog/fall_v0.png"), 100, 100, 1);
+            fallAnimations.Add(fall_v0);
+            State fall = new State(Pet.States.Fall, fallAnimations, false, Pet.States.Idle, 1);
+            stateLoadingDict.Add(Pet.States.Fall, fall);
+            #endregion
+            #region Attention State
+            List<Animation> attentionAnimations = new List<Animation>();
+            Animation attention_v0 = new Animation(new Bitmap("Art/Dog/attention_v0.png"), 100, 100, 10);
+            attentionAnimations.Add(attention_v0);
+            State attention = new State(Pet.States.Attention, attentionAnimations, true, Pet.States.Null, 2, new SoundPlayer("SFX/Cat/rii_attention.wav"));
+            stateLoadingDict.Add(Pet.States.Attention, attention);
+            #endregion
+            #region Satisfied State
+            List<Animation> satisfiedAnimations = new List<Animation>();
+            Animation satisfied_v0 = new Animation(new Bitmap("Art/Dog/satisfied_v0.png"), 100, 100, 10);
+            satisfiedAnimations.Add(satisfied_v0);
+            State satisfied = new State(Pet.States.Satisfied, satisfiedAnimations, false, Pet.States.Null, 1, new SoundPlayer("SFX/Cat/rii_satisfied.wav"));
+            stateLoadingDict.Add(Pet.States.Satisfied, satisfied);
+            #endregion
+            return new Pet("Toby", stateLoadingDict, new Bitmap("Art/Dog/idle_v0.png").GetPixel(0, 0), 100, 100);
+        }
     }
 }

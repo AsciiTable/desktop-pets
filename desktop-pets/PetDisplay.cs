@@ -16,7 +16,7 @@ namespace desktop_pets
     {
         private int _DisplayHeight = SystemInformation.WorkingArea.Height;
         private int _DisplayWidth = SystemInformation.WorkingArea.Width;
-        private Bitmap defaultLayer = new Bitmap("Art/Cat/idle.png");
+        private Bitmap defaultLayer = new Bitmap("Art/Cat/idle_v0.png");
 /*        #region Icon Fields
         private NotifyIcon notifyIcon;
         private ContextMenu contextMenu;
@@ -29,8 +29,8 @@ namespace desktop_pets
         private DateTime freefallTimer = new DateTime();
         private int count = 0;
         private Random rand = new Random();
-        private int XSIZE = 64;
-        private int YSIZE = 64;
+        private int XSIZE = 0;                                            
+        private int YSIZE = 0;
         private int SINKLEVEL = 3;
         private const float GRAVIATIONALCONSTANT = 9.8f;
 
@@ -54,6 +54,12 @@ namespace desktop_pets
 
         public PetDisplay(Pet p) {
             displayedPet = p;
+            XSIZE = p.XSIZE;
+            YSIZE = p.YSIZE;
+            defaultLayer.MakeTransparent(p.transparentColor);
+            this.BackColor = p.transparentColor;
+            this.TransparencyKey = p.transparentColor;
+            this.Size = new Size(XSIZE, YSIZE);
             InitializeComponent();
         }
 
@@ -91,11 +97,11 @@ namespace desktop_pets
             this.Size = new Size(XSIZE, YSIZE);
 
             #region Background of Window
-            Color transColor = defaultLayer.GetPixel(0, 0);
-            defaultLayer.MakeTransparent(transColor);
+            //Color transColor = defaultLayer.GetPixel(0, 0);
+            //defaultLayer.MakeTransparent(transColor);
             this.BackgroundImage = defaultLayer;
-            this.BackColor = transColor;
-            this.TransparencyKey = transColor;
+            //this.BackColor = transColor;
+            //this.TransparencyKey = transColor;
             #endregion
 
             HeadPoint = _DisplayHeight - YSIZE + SINKLEVEL;
