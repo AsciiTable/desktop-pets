@@ -101,8 +101,10 @@ namespace desktop_pets
                 }
                 else if (i == 1) { // Load Toby the Dog information 
                     Console.WriteLine("Toby the dog's row");
+                    PictureBox pb = (PictureBox)tlp.GetControlFromPosition(0, i);
+                    pb.Image = new Bitmap("Art/cat/idle-trans.png");
                     tlp.GetControlFromPosition(1, i).Text = "Toby";
-                }
+                } 
                 if (i == 0 || i == 1) { // If it is either Rii or Toby's row, enable all remaining controls
                     tlp.GetControlFromPosition(2, i).Enabled = false;                                           // Eventually change this out to lead to a different functionality
                     tlp.GetControlFromPosition(3, i).Enabled = true;

@@ -110,14 +110,14 @@ namespace desktop_pets
             List<Animation> attentionAnimations = new List<Animation>();
             Animation attention_v0 = new Animation(new Bitmap("Art/Dog/attention_v0.png"), 100, 100, 10);
             attentionAnimations.Add(attention_v0);
-            State attention = new State(Pet.States.Attention, attentionAnimations, true, Pet.States.Null, 2, new SoundPlayer("SFX/Cat/rii_attention.wav"));
+            State attention = new State(Pet.States.Attention, attentionAnimations, true, Pet.States.Null, 2, new SoundPlayer("SFX/Dog/toby_attention.wav"));
             stateLoadingDict.Add(Pet.States.Attention, attention);
             #endregion
             #region Satisfied State
             List<Animation> satisfiedAnimations = new List<Animation>();
             Animation satisfied_v0 = new Animation(new Bitmap("Art/Dog/satisfied_v0.png"), 100, 100, 10);
             satisfiedAnimations.Add(satisfied_v0);
-            State satisfied = new State(Pet.States.Satisfied, satisfiedAnimations, false, Pet.States.Null, 1, new SoundPlayer("SFX/Cat/rii_satisfied.wav"));
+            State satisfied = new State(Pet.States.Satisfied, satisfiedAnimations, false, Pet.States.Null, 1);
             stateLoadingDict.Add(Pet.States.Satisfied, satisfied);
             #endregion
             return new Pet("Toby", stateLoadingDict, new Bitmap("Art/Dog/idle_v0.png").GetPixel(0, 0), 100, 100);
