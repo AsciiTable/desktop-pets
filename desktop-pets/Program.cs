@@ -18,7 +18,7 @@ namespace desktop_pets
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new PetDisplay(SaveSystem.LoadTobyTheDog()));
+            //Application.Run(new PetDisplay(SaveSystem.LoadTobyTheDog()));
             Application.Run(new PetDisplay(SaveSystem.LoadRiiTheCat()));
             //Application.Run(new ManagementDisplay());
         }
